@@ -1,9 +1,9 @@
-import csv
-import numpy as np
-import hashlib
 import base64
-
+import csv
+import hashlib
 from sys import byteorder
+
+import numpy as np
 
 
 class sbf:
@@ -13,7 +13,7 @@ class sbf:
     # This value defines the maximum  number of cells of the SBF:
     # MAX_BIT_MAPPING = 32 states that the SBF will be composed at most by 2^32 cells.
     # The value is the number of bits used for SBF indexing.
-    MAX_BIT_MAPPING = 8
+    MAX_BIT_MAPPING = 4
     # Utility byte value of the above MAX_BIT_MAPPING
     MAX_BYTE_MAPPING = MAX_BIT_MAPPING/8
     # The maximum number of allowed areas.
@@ -186,12 +186,12 @@ class sbf:
 
             # We allow a maximum SBF mapping of 32 bit (resulting in 2^32 cells).
             # Thus, the hash digest is truncated after the first 4 bytes.
-            self.digest = self.m.digest()[:1]
+            # self.digest = self.m.digest()[:1]
+            self.digest = int.from_bytes(self.m.digest()[:1], byteorder=byteorder) >> 4
 
-            # self.index = int.from_bytes(self.digest, byteorder=byteorder) % (pow(2, self.bit_mapping))
-            self.index = int(int.from_bytes(self.digest, byteorder=byteorder) /
-                             (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
-            # self.index >>= 4
+            self.index = self.digest % (pow(2, self.bit_mapping))
+            # self.index = int(self.digest /
+            #                  (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
 
             self.set_cell(self.index, self.area)
 
@@ -303,11 +303,11 @@ class sbf:
 
             # We allow a maximum SBF mapping of 32 bit (resulting in 2^32 cells).
             # Thus, the hash digest is truncated after the first 4 bytes.
-            self.digest = self.m.digest()[:1]
+            self.digest = int.from_bytes(self.m.digest()[:1], byteorder=byteorder) >> 4
 
-            # self.index = int.from_bytes(self.digest, byteorder=byteorder) % (pow(2,self.bit_mapping))
-            self.index = int(int.from_bytes(self.digest, byteorder=byteorder) /
-                             (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
+            self.index = self.digest % (pow(2, self.bit_mapping))
+            # self.index = int(self.digest /
+            #                  (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
 
             self.current_area = self.filter[self.index]
 
