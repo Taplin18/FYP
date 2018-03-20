@@ -15,7 +15,3 @@ table#myTable.centered tbody td {
     -webkit-border-radius: 10px;
     border-radius: 10px;
 }
-
-body {
-    background-color: #e4e4e4;
-}
