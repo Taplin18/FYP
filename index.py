@@ -14,28 +14,28 @@ print()
 
 form_data = FieldStorage()
 
+mySBF = sbf(4, 'sha1', 3)
+format_stats = Stats()
+
 sbf_table = ""
 sbf_check = ""
 sbf_stats = ""
 
-check_col = "col s12 m12"
-check_result = "blank"
+check_result = ""
 
 if len(form_data) != 0:
     if form_data.getvalue("sbf_import"):
-        mySBF = sbf(4, 'sha1', 3)
         mySBF.insert_from_file()
         sbf_result = mySBF.get_filter()
         for i in range(0, pow(2, 4)):
             sbf_table += "<td>{}</td>".format(str(sbf_result[i]))
 
-        check_col = "col s12 m6"
-        format_stats = Stats(mySBF.get_stats())
-        sbf_stats = format_stats.get_stats()
+        sbf_stats = format_stats.load_stats(mySBF.get_stats())
 
 else:
     for i in range(0, pow(2, 4)):
-        sbf_table += "<td></td>"
+        sbf_table += "<td>0</td>"
+    sbf_stats = format_stats.load_initial_stats()
 
 print("""
 <!DOCTYPE html>
@@ -93,7 +93,7 @@ print("""
 
         <div class="container">
             <div class="row">
-                <div class="col s12">
+                <div class="col s6 m6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
@@ -107,12 +107,48 @@ print("""
                                 </div>
                                 <div class="card-action">
                                     <form action="index.py" method="post">
-                                        <input type="hidden" name="sbf_import" id="sbf_import" value="sbf_import>
+                                        <input type="hidden" name="sbf_import" id="sbf_import" value="sbf_import">
                                         <!--input type="submit" value="Submit Query"-->
-                                        <button class="btn waves-effect waves-light blue lighten-1" type="submit">
-                                            Import<i class="material-icons right">send</i>
+                                        <button class="btn waves-effect waves-light blue lighten-1 " type="submit">
+                                            Import<i class="material-icons right">file_upload</i>
                                         </button>
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col s6 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title">The Details</span>
+                                <div class="section">
+                                    <p>
+                                        The hash family selected is sha1.<br>
+                                        The hash runs three times.
+                                    </p>
+                                </div>
+                                <div class="card-action">
+                                    <div  class="col s6 m6">
+                                        <form action="index.py" method="post">
+                                            <input type="hidden" name="sbf_details" id="sbf_details" value="sbf_details">
+                                            <!--input type="submit" value="Submit Query"-->
+                                            <button class="btn waves-effect waves-light blue lighten-1 disabled" type="submit">
+                                                Submit<i class="material-icons right">send</i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div>
+                                        <form action="index.py" method="post" class="col s6 m6">
+                                            <input type="hidden" name="sbf_clear" id="sbf_clear" value="sbf_clear">
+                                            <!--input type="submit" value="Submit Query"-->
+                                            <button class="btn waves-effect waves-light blue lighten-1 disabled" type="submit">
+                                                Clear Filter<i class="material-icons right">clear</i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -155,10 +191,23 @@ print("""
             </div>
 
             <div class="row">
+                <div class="col s12 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title">SBF Stats</span>
+                                <div class="divider"></div>
+                                <div class="section">
+                                    <ul class="collection">
+                                        {}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                {}
-                
-                <div class="{}">
+                <div class="col s6 m6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
@@ -176,8 +225,8 @@ print("""
                                 </div>
                             </div>
                             <div class="card-action">
-                                <button class="btn waves-effect waves-light blue lighten-1" type="button" name="import">
-                                    Check<i class="material-icons right">send</i>
+                                <button class="btn waves-effect waves-light blue lighten-1 disabled" type="button" name="import">
+                                    Check<i class="material-icons right">check</i>
                                 </button>
                             </div>
                         </div>
@@ -188,4 +237,4 @@ print("""
 
     </body>
 </html>
-""".format(sbf_table, sbf_stats, check_col, check_result))
+""".format(sbf_table, sbf_stats, check_result))
