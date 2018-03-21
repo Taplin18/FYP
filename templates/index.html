@@ -16,20 +16,20 @@
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"  media="screen,projection"/>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
-        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}" />
-        <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
+        <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
 
         <title>FYP</title>
     </head>
     <body>
         <div class="navbar-fixed">
             <ul id="dropdown1" class="dropdown-content">
-                <li><a href="{{ url_for('static', filename='cork.pdf') }}">With Areas of Interest</a></li>
+                <li><a href="{{ url_for('static', filename='dataset/cork.pdf') }}">With Areas of Interest</a></li>
                 <li class="divider"></li>
-                <li><a href="{{ url_for('static', filename='cork-no-aoi.pdf') }}">No Areas of Interest</a></li>
+                <li><a href="{{ url_for('static', filename='dataset/cork-no-aoi.pdf') }}">No Areas of Interest</a></li>
                 <li class="divider"></li>
-                <li><a href="{{ url_for('static', filename='cork.csv') }}">Coordinates</a></li>
+                <li><a href="{{ url_for('static', filename='dataset/cork.csv') }}">Coordinates</a></li>
             </ul>
             <nav class="blue lighten-1">
                 <div class="nav-wrapper">
