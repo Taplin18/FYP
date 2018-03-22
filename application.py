@@ -1,15 +1,15 @@
 from flask import Flask, render_template, Markup, session, request
 from scripts.layout import Layout
 from scripts.sbf import sbf
-app = Flask(__name__)
+application = Flask(__name__)
 
-app.secret_key = 'any random string'
+application.secret_key = 'any random string'
 
 format_layout = Layout()
 my_sbf = sbf(4, 'sha1', 3)
 
 
-@app.route('/')
+@application.route('/')
 def index():
     sbf_table, sbf_stats, check_result = "", "", ""
     sbf_table = format_layout.load_initial_table()
@@ -23,7 +23,7 @@ def index():
                            check_result=Markup(check_result))
 
 
-@app.route('/import_sbf', methods=['POST'])
+@application.route('/import_sbf', methods=['POST'])
 def import_sbf():
     check_result = session.get('check_result')
     sbf_table = ""
@@ -39,7 +39,7 @@ def import_sbf():
                            check_result=Markup(check_result))
 
 
-@app.route('/check_sbf', methods=['POST'])
+@application.route('/check_sbf', methods=['POST'])
 def check_sbf():
     if request.method == 'POST':
         result = request.form
@@ -54,4 +54,4 @@ def check_sbf():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    application.run(debug=True)
