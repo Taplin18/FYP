@@ -9,11 +9,11 @@ import numpy as np
 class sbf:
 
     # The maximum string length in bytes of each element given as input to be mapped in the SBF
-    MAX_INPUT_SIZE = 16
+    MAX_INPUT_SIZE = 128
     # This value defines the maximum  number of cells of the SBF:
     # MAX_BIT_MAPPING = 32 states that the SBF will be composed at most by 2^32 cells.
     # The value is the number of bits used for SBF indexing.
-    MAX_BIT_MAPPING = 4
+    MAX_BIT_MAPPING = 10
     # Utility byte value of the above MAX_BIT_MAPPING
     MAX_BYTE_MAPPING = MAX_BIT_MAPPING/8
     # The maximum number of allowed areas.
@@ -21,7 +21,7 @@ class sbf:
     # The maximum number of allowed digests
     MAX_HASH_NUMBER = 10
     # The available hash families
-    HASH_FAMILIES = ['md4', 'MD4', 'md5', 'MD5', 'sha', 'SHA', 'sha1', 'SHA1']
+    HASH_FAMILIES = ['md4', 'md5', 'sha', 'sha1', 'sha256']
 
     def __init__(self, bit_mapping, hash_family, num_hashes, num_areas=4):
         """
@@ -35,7 +35,7 @@ class sbf:
         """
 
         self.bit_mapping = bit_mapping
-        self.hash_family = hash_family
+        self.hash_family = [x.lower() for x in hash_family]
         self.num_hashes = num_hashes
         self.num_areas = num_areas
         self.hash_salt_path = 'hash_salt/hash_salt'
@@ -43,12 +43,13 @@ class sbf:
         # Argument validation
         if (self.bit_mapping <= 0) or (self.bit_mapping > self.MAX_BIT_MAPPING):
             raise AttributeError("Invalid bit mapping.")
-        if self.hash_family not in self.HASH_FAMILIES:
-            raise AttributeError("Invalid hash family.")
         if (self.num_hashes <= 0) or (self.num_hashes > self.MAX_HASH_NUMBER):
             raise AttributeError("Invalid number of hash runs.")
         if (self.num_areas <= 0) or (self.num_areas > self.MAX_AREA_NUMBER):
             raise AttributeError("Invalid number of areas.")
+        for self.i in self.hash_family:
+            if self.i not in self.HASH_FAMILIES:
+                raise AttributeError("Invalid hash family.")
 
         # The number of bytes required for each cell
         # As MAX_AREA_NUMBER is set to 4, 1 byte is enough
@@ -82,6 +83,7 @@ class sbf:
         self.area_self_collisions = [0] * (self.num_areas + 1)
         # list of file from which elements have been inserted
         self.insert_file_list = []
+        del self.i
 
     def __del__(self):
         """
@@ -154,7 +156,7 @@ class sbf:
 
         return self.hash_salts
 
-    def _insert(self, element, area):
+    def insert(self, element, area):
         """
         Inserts an element into the SBF filter.
         For each hash function, internal method set_cell is called, passing elements coupled with the area labels.
@@ -168,32 +170,34 @@ class sbf:
 
         # Computes the hash digest of the input 'num_hashes' times; each
         # iteration combines the input string with a different hash salt
-        for self.i in range(0, self.num_hashes):
+        for self.i in self.hash_family:
+            for self.j in range(0, self.num_hashes):
 
-            # XOR byte by byte (as char by char) of the element string with the salt
-            self.buffer = bytes(''.join([chr(ord(a) ^ b) for (a, b) in zip(self.element, self.hash_salts[self.i])]),
-                                'latin-1')
+                # XOR byte by byte (as char by char) of the element string with the salt
+                self.buffer = bytes(''.join([chr(ord(a) ^ b)
+                                             for (a, b) in zip(self.element, self.hash_salts[self.j])]), 'latin-1')
 
-            # Initializes the hash function according to the hash family
-            if self.hash_family in ['md5', 'MD5']:
-                self.m = hashlib.md5()
-            elif self.hash_family in ['sha', 'SHA', 'sha1', 'SHA1']:
-                self.m = hashlib.sha1()
-            else:
-                self.m = hashlib.new(self.hash_family)
+                # Initializes the hash function according to the hash family
+                if self.i == 'md5':
+                    self.m = hashlib.md5()
+                elif self.i in ['sha', 'sha1']:
+                    self.m = hashlib.sha1()
+                else:
+                    self.m = hashlib.new(self.i)
 
-            self.m.update(self.buffer)
+                self.m.update(self.buffer)
 
-            # We allow a maximum SBF mapping of 32 bit (resulting in 2^32 cells).
-            # Thus, the hash digest is truncated after the first 4 bytes.
-            # self.digest = self.m.digest()[:1]
-            self.digest = int.from_bytes(self.m.digest()[:1], byteorder=byteorder) >> 4
+                # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
+                # Thus, the hash digest is truncated after the first byte.
+                # self.digest = self.m.digest()[:2]
+                self.digest = int.from_bytes(self.m.digest()[:2], byteorder=byteorder) >> 6
 
-            self.index = self.digest % (pow(2, self.bit_mapping))
-            # self.index = int(self.digest /
-            #                  (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
+                # self.index = int.from_bytes(self.digest , byteorder=byteorder) % (pow(2, self.bit_mapping))
+                # self.index = int(int.from_bytes(self.digest, byteorder=byteorder) /
+                #                  (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
+                self.index = int(self.digest / (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
 
-            self.set_cell(self.index, self.area)
+                self.set_cell(self.index, self.area)
 
         self.members += 1
         self.area_members[self.area] += 1
@@ -202,6 +206,7 @@ class sbf:
         del self.digest
         del self.m
         del self.i
+        del self.j
         del self.element
 
     def insert_from_file(self):
@@ -218,7 +223,7 @@ class sbf:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
             for self.row in self.dataset_reader:
                 if int(self.row[0]) in [1, 2, 3, 4]:
-                    self._insert(self.row[1], int(self.row[0]))
+                    self.insert(self.row[1], int(self.row[0]))
 
         self.insert_file_list.append(self.dataset_path)
 
@@ -285,46 +290,48 @@ class sbf:
 
         # Computes the hash digest of the input 'num_hashes' times; each
         # iteration combines the input string with a different hash salt
-        for self.i in range(0, self.num_hashes):
+        for self.i in self.hash_family:
+            for self.j in range(0, self.num_hashes):
 
-            # XOR byte by byte (as char by char) of the element string with the salt
-            self.buffer = bytes(''.join([chr(ord(a) ^ b) for (a, b) in zip(self.element, self.hash_salts[self.i])]),
-                                'latin-1')
+                # XOR byte by byte (as char by char) of the element string with the salt
+                self.buffer = bytes(''.join([chr(ord(a) ^ b)
+                                             for (a, b) in zip(self.element, self.hash_salts[self.j])]), 'latin-1')
 
-            # Initializes the hash function according to the hash family
-            if self.hash_family in ['md5', 'MD5']:
-                self.m = hashlib.md5()
-            elif self.hash_family in ['sha', 'SHA', 'sha1', 'SHA1']:
-                self.m = hashlib.sha1()
-            else:
-                self.m = hashlib.new(self.hash_family)
+                # Initializes the hash function according to the hash family
+                if self.i == 'md5':
+                    self.m = hashlib.md5()
+                elif self.i in ['sha', 'sha1']:
+                    self.m = hashlib.sha1()
+                else:
+                    self.m = hashlib.new(self.i)
 
-            self.m.update(self.buffer)
+                self.m.update(self.buffer)
 
-            # We allow a maximum SBF mapping of 32 bit (resulting in 2^32 cells).
-            # Thus, the hash digest is truncated after the first 4 bytes.
-            self.digest = int.from_bytes(self.m.digest()[:1], byteorder=byteorder) >> 4
+                # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
+                # Thus, the hash digest is truncated after the first byte.
+                self.digest = self.m.digest()[:1]
 
-            self.index = self.digest % (pow(2, self.bit_mapping))
-            # self.index = int(self.digest /
-            #                  (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
+                # self.index = int.from_bytes(self.digest , byteorder=byteorder) % (pow(2, self.bit_mapping))
+                self.index = int(int.from_bytes(self.digest, byteorder=byteorder) /
+                                 (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
 
-            self.current_area = self.filter[self.index]
+                self.current_area = self.filter[self.index]
 
-            # If one hash points to an empty cell, the element does not belong
-            # to any set.
-            if self.current_area == 0:
-                return 0
-            # Otherwise, stores the lower area label, among those which were returned
-            elif self.area == 0:
-                self.area = self.current_area
-            elif self.current_area < self.area:
-                self.area = self.current_area
+                # If one hash points to an empty cell, the element does not belong
+                # to any set.
+                if self.current_area == 0:
+                    return 0
+                # Otherwise, stores the lower area label, among those which were returned
+                elif self.area == 0:
+                    self.area = self.current_area
+                elif self.current_area < self.area:
+                    self.area = self.current_area
 
         del self.buffer
         del self.digest
         del self.m
         del self.i
+        del self.j
         del self.current_area
         del self.index
         del self.element
@@ -350,3 +357,15 @@ class sbf:
             "Size in bytes":  str(self.cell_size * self.num_cells)
         }
         return self.stats
+
+    def clear_filter(self):
+        """
+        Clear the filter and related information.
+        """
+        self.filter = np.array(np.repeat(0, self.num_cells), dtype=np.uint8)
+        self.members = 0
+        self.collisions = 0
+        self.area_members = [0] * (self.num_areas + 1)
+        self.area_cells = [0] * (self.num_areas + 1)
+        self.area_self_collisions = [0] * (self.num_areas + 1)
+        self.insert_file_list = []

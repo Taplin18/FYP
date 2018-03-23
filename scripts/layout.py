@@ -3,10 +3,12 @@
 
 class Layout:
 
-    def __init__(self):
+    def __init__(self, num_cells):
         """
         Initialises stats and table layout.
+        :param num_cells: the number of cells in the filter (2^num_cells).
         """
+        self.num_cells = num_cells
         self.stats = ""
         self.table = ""
         self.check = ""
@@ -24,14 +26,6 @@ class Layout:
             self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i], self.sbf_stats[k[i]])
         return self.stats
 
-    def load_initial_stats(self):
-        """
-        Returns the initial stats of the filter.
-        :return: a string of HTML to display the stat results.
-        """
-        self.stats = "<li class=\"collection-item\">Number of cells: 16</li>"
-        return self.stats
-
     def load_table(self, sbf_table):
         """
         Returns the table contents.
@@ -39,20 +33,13 @@ class Layout:
         :return: a string of HTML to display the contents of the filter.
         """
         self.sbf_table = sbf_table
-        self.table = ""
+        self.table = "<tr>"
 
-        for i in range(0, pow(2, 4)):
+        for i in range(0, pow(2, self.num_cells)):
+            if (i % 64 == 0) and (i != 0):
+                self.table += "</tr><tr>"
             self.table += "<td>{}</td>".format(str(self.sbf_table[i]))
-        return self.table
-
-    def load_initial_table(self):
-        """
-        Returns the initial table contents.
-        :return: a string of HTML to display the contents of the filter.
-        """
-        self.table = ""
-        for i in range(0, pow(2, 4)):
-            self.table += "<td>0</td>"
+        self.table += "</tr>"
         return self.table
 
     def load_check_result(self, value, result):

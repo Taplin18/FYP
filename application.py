@@ -5,15 +5,18 @@ application = Flask(__name__)
 
 application.secret_key = 'any random string'
 
-format_layout = Layout()
-my_sbf = sbf(4, 'sha1', 3)
+CELL_NUM = 10
+HASH_FAM = ['md5', 'SHA256', 'sha1']
+
+format_layout = Layout(CELL_NUM)
+my_sbf = sbf(CELL_NUM, HASH_FAM, 1)
 
 
 @application.route('/')
 def index():
     sbf_table, sbf_stats, check_result = "", "", ""
-    sbf_table = format_layout.load_initial_table()
-    sbf_stats = format_layout.load_initial_stats()
+    sbf_table = format_layout.load_table(my_sbf.get_filter())
+    sbf_stats = format_layout.load_stats(my_sbf.get_stats())
 
     session['sbf_table'] = sbf_table
     session['sbf_stats'] = sbf_stats
@@ -26,7 +29,6 @@ def index():
 @application.route('/import_sbf', methods=['POST'])
 def import_sbf():
     check_result = session.get('check_result')
-    sbf_table = ""
 
     my_sbf.insert_from_file()
     sbf_table = format_layout.load_table(my_sbf.get_filter())
@@ -51,6 +53,22 @@ def check_sbf():
 
         return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
                                check_result=Markup(check_result))
+
+
+@application.route('/clear_sbf', methods=['POST'])
+def clear_sbf():
+    check_result = session.get('check_result')
+
+    my_sbf.clear_filter()
+    sbf_table = format_layout.load_table(my_sbf.get_filter())
+    sbf_stats = format_layout.load_stats(my_sbf.get_stats())
+
+    session['sbf_table'] = sbf_table
+    session['sbf_stats'] = sbf_stats
+
+    return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
+                           check_result=Markup(check_result))
+
 
 
 if __name__ == '__main__':
