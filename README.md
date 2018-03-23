@@ -1,5 +1,5 @@
 # FYP
-[Spacial Bloom Filter Web Demo](http://34.252.201.88/)
+<a href="http://34.252.201.88/" target="_blank">Spacial Bloom Filter Web Demo</a>
 
 ### Abstract ###
 Location privacy is a growing issue in cybersecurity. The spatial bloom filter is one of the many privacy-preserving protocols aimed at mitigating this threat to personal privacy. The goal of this project is to develop a graphical web demo that would explain to non-experts what a spatial bloom filter is and how it works. 
