@@ -1,9 +1,9 @@
 from flask import Flask, render_template, Markup, session, request
 from scripts.layout import Layout
 from scripts.sbf import sbf
-application = Flask(__name__)
+app = Flask(__name__)
 
-application.secret_key = 'any random string'
+app.secret_key = 'any random string'
 
 CELL_NUM = 10
 HASH_FAM = ['md5', 'SHA256', 'sha1']
@@ -12,7 +12,7 @@ format_layout = Layout(CELL_NUM)
 my_sbf = sbf(CELL_NUM, HASH_FAM, 1)
 
 
-@application.route('/')
+@app.route('/')
 def index():
     sbf_table, sbf_stats, check_result = "", "", ""
     sbf_table = format_layout.load_table(my_sbf.get_filter())
@@ -26,7 +26,7 @@ def index():
                            check_result=Markup(check_result))
 
 
-@application.route('/import_sbf', methods=['POST'])
+@app.route('/import_sbf', methods=['POST'])
 def import_sbf():
     check_result = session.get('check_result')
 
@@ -41,7 +41,7 @@ def import_sbf():
                            check_result=Markup(check_result))
 
 
-@application.route('/check_sbf', methods=['POST'])
+@app.route('/check_sbf', methods=['POST'])
 def check_sbf():
     if request.method == 'POST':
         result = request.form
@@ -55,7 +55,7 @@ def check_sbf():
                                check_result=Markup(check_result))
 
 
-@application.route('/clear_sbf', methods=['POST'])
+@app.route('/clear_sbf', methods=['POST'])
 def clear_sbf():
     check_result = session.get('check_result')
 
@@ -70,6 +70,5 @@ def clear_sbf():
                            check_result=Markup(check_result))
 
 
-
 if __name__ == '__main__':
-    application.run(debug=True)
+    app.run()
