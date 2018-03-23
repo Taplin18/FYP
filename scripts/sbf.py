@@ -38,7 +38,7 @@ class sbf:
         self.hash_family = [x.lower() for x in hash_family]
         self.num_hashes = num_hashes
         self.num_areas = num_areas
-        self.hash_salt_path = 'hash_salt/hash_salt'
+        self.hash_salt_path = '/var/www/demo/hash_salt/hash_salt'
 
         # Argument validation
         if (self.bit_mapping <= 0) or (self.bit_mapping > self.MAX_BIT_MAPPING):
@@ -216,7 +216,7 @@ class sbf:
         separated by the value dataset_delimiter, which defaults to ','.
         """
 
-        self.dataset_path = 'dataset/cork.csv'
+        self.dataset_path = '/var/www/demo/dataset/cork.csv'
         self.dataset_delimiter = ','
 
         with open(self.dataset_path, 'r') as self.dataset_file:
