@@ -2,6 +2,9 @@
 
 [Spacial Bloom Filter Web Demo](http://34.252.201.88/)
 
+### Title ###
+Location Privacy Tool - A Web Demo
+
 ### Abstract ###
 Location privacy is a growing issue in cybersecurity. The spatial bloom filter is one of the many privacy-preserving protocols aimed at mitigating this threat to personal privacy. The goal of this project is to develop a graphical web demo that would explain to non-experts what a spatial bloom filter is and how it works. 
 
