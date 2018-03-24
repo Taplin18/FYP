@@ -192,13 +192,9 @@ class sbf:
 
                 # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
                 # Thus, the hash digest is truncated after the first byte.
-                # self.digest = self.m.digest()[:2]
-                self.digest = int.from_bytes(self.m.digest()[:2], byteorder=byteorder) >> 6
+                self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
 
-                # self.index = int.from_bytes(self.digest , byteorder=byteorder) % (pow(2, self.bit_mapping))
-                # self.index = int(int.from_bytes(self.digest, byteorder=byteorder) /
-                #                  (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
-                self.index = int(self.digest / (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
+                self.index = int(self.digest % pow(2, self.bit_mapping))
 
                 self.set_cell(self.index, self.area)
 
@@ -312,11 +308,9 @@ class sbf:
 
                 # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
                 # Thus, the hash digest is truncated after the first byte.
-                self.digest = self.m.digest()[:1]
+                self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
 
-                # self.index = int.from_bytes(self.digest , byteorder=byteorder) % (pow(2, self.bit_mapping))
-                self.index = int(int.from_bytes(self.digest, byteorder=byteorder) /
-                                 (pow(2, (self.MAX_BIT_MAPPING - self.bit_mapping))))
+                self.index = int(self.digest % pow(2, self.bit_mapping))
 
                 self.current_area = self.filter[self.index]
 
@@ -372,6 +366,33 @@ class sbf:
         self.area_cells = [0] * (self.num_areas + 1)
         self.area_self_collisions = [0] * (self.num_areas + 1)
         self.insert_file_list = []
+
+    def _bits_of(self, byte, nbits):
+        """
+        Return the number of bits need for mapping the hash digest.
+        :param byte: the hash digest.
+        :param nbits: the number of bits needed for mapping
+        :raise ValueError: the bytes need for truncation is greater than the number of bytes provided.
+        :return: the bits needed for mapping
+        """
+        self.byte = byte
+        self.nbits = nbits
+
+        # Calculate where to truncate the hash digest
+        self.bytes_needed = (self.nbits + 7) // 8
+        if self.bytes_needed > len(self.byte):
+            raise ValueError("Require {} bytes, received {}".format(self.bytes_needed, len(byte)))
+
+        self.x = int.from_bytes(byte[:self.bytes_needed], byteorder=byteorder)
+        # If there were a non-byte aligned number of bits requested,
+        # shift off the excess from the right (which came from the last byte processed)
+        if self.nbits % 8:
+            self.x >>= 8 - self.nbits % 8
+
+        del self.byte
+        del self.nbits
+        del self.bytes_needed
+        return self.x
 
     @staticmethod
     def _get_salt_path():
