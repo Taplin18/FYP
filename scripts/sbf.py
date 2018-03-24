@@ -375,6 +375,10 @@ class sbf:
 
     @staticmethod
     def _get_salt_path():
+        """
+        Returns the correct path to the hash salt file.
+        :return: the path to the hash salt file.
+        """
         aws = "/var/www/demo/hash_salt/hash_salt"
         if Path(aws).is_file():
             return aws
@@ -383,6 +387,10 @@ class sbf:
 
     @staticmethod
     def _get_dataset_path():
+        """
+        Returns the correct path to the cork csv.
+        :return: the path to the cork csv.
+        """
         aws = "/var/www/demo/dataset/cork.csv"
         if Path(aws).is_file():
             return aws
