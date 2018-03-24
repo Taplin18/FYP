@@ -9,7 +9,7 @@ CELL_NUM = 10
 HASH_FAM = ['md5', 'SHA256', 'sha1']
 
 format_layout = Layout(CELL_NUM)
-my_sbf = sbf(CELL_NUM, HASH_FAM, 1)
+my_sbf = sbf(CELL_NUM, HASH_FAM)
 
 
 @app.route('/')

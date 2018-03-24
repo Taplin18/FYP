@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-
-
 class Layout:
 
     def __init__(self, num_cells):

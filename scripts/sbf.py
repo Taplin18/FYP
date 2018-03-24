@@ -2,10 +2,12 @@ import base64
 import csv
 import hashlib
 from sys import byteorder
+from pathlib import Path
 
 import numpy as np
 
 
+# noinspection PyAttributeOutsideInit
 class sbf:
 
     # The maximum string length in bytes of each element given as input to be mapped in the SBF
@@ -22,8 +24,9 @@ class sbf:
     MAX_HASH_NUMBER = 10
     # The available hash families
     HASH_FAMILIES = ['md4', 'md5', 'sha', 'sha1', 'sha256']
+    # Path to hash salt file
 
-    def __init__(self, bit_mapping, hash_family, num_hashes, num_areas=4):
+    def __init__(self, bit_mapping, hash_family, num_hashes=1, num_areas=4):
         """
         Initialises the SBF class.
         :param bit_mapping: filter composed of 2^bit_mapping cells.
@@ -38,7 +41,7 @@ class sbf:
         self.hash_family = [x.lower() for x in hash_family]
         self.num_hashes = num_hashes
         self.num_areas = num_areas
-        self.hash_salt_path = '/var/www/demo/hash_salt/hash_salt'
+        self.hash_salt_path = self._get_salt_path()
 
         # Argument validation
         if (self.bit_mapping <= 0) or (self.bit_mapping > self.MAX_BIT_MAPPING):
@@ -100,7 +103,7 @@ class sbf:
         try:
             return self
         except StopIteration:
-            raise RuntimeError("Error during objct generation")
+            raise RuntimeError("Error during object generation")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
@@ -216,7 +219,7 @@ class sbf:
         separated by the value dataset_delimiter, which defaults to ','.
         """
 
-        self.dataset_path = '/var/www/demo/dataset/cork.csv'
+        self.dataset_path = self._get_dataset_path()
         self.dataset_delimiter = ','
 
         with open(self.dataset_path, 'r') as self.dataset_file:
@@ -369,3 +372,19 @@ class sbf:
         self.area_cells = [0] * (self.num_areas + 1)
         self.area_self_collisions = [0] * (self.num_areas + 1)
         self.insert_file_list = []
+
+    @staticmethod
+    def _get_salt_path():
+        aws = "/var/www/demo/hash_salt/hash_salt"
+        if Path(aws).is_file():
+            return aws
+        else:
+            return "hash_salt/hash_salt"
+
+    @staticmethod
+    def _get_dataset_path():
+        aws = "/var/www/demo/dataset/cork.csv"
+        if Path(aws).is_file():
+            return aws
+        else:
+            return "dataset/cork.csv"
