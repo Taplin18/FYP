@@ -1,4 +1,4 @@
-# FYP
+# Final Year Project
 
 [Spacial Bloom Filter Web Demo](http://34.252.201.88/)
 
