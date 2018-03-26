@@ -1,17 +1,4 @@
-table#myTable.centered thead th {
-    border: 1px solid black;
-    padding: 1px;
-}
-
 table#myTable.centered tbody td {
     border: 1px solid black;
     /*padding: 1px;*/
-}
-
-.sbf {
-    background-color: white;
-    margin: auto;
-    padding: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
 }
