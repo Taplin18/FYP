@@ -28,9 +28,9 @@ class Layout:
         for i in range(0, len(k)):
             if k[i] == "Hash family":
                 self.hf = ', '.join(map(str, ast.literal_eval(self.sbf_stats[k[i]])))
-                self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i], self.hf.upper())
+                self.stats += "<li class=\"collection-item\"><b>{}:</b> {}</li>".format(k[i], self.hf.upper())
             else:
-                self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i], self.sbf_stats[k[i]])
+                self.stats += "<li class=\"collection-item\"><b>{}:</b> {}</li>".format(k[i], self.sbf_stats[k[i]])
 
         del self.hf
         del self.sbf_stats
