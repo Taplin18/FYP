@@ -27,25 +27,14 @@ class Layout:
         self.stats = ""
         for i in range(0, len(k)):
             if k[i] == "Hash family":
-                self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i],
-                                                                                 self._hash_names(self.sbf_stats[k[i]]))
+                self.hf = ', '.join(map(str, ast.literal_eval(self.sbf_stats[k[i]])))
+                self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i], self.hf.upper())
             else:
                 self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i], self.sbf_stats[k[i]])
 
+        del self.hf
         del self.sbf_stats
         return self.stats
-
-    def _hash_names(self, hash_family):
-        self.hf = ""
-        self.hash_family = ast.literal_eval(hash_family)
-        for i in range(0, len(self.hash_family)):
-            if i == (len(self.hash_family) - 1):
-                self.hf += "{}".format(self.hash_family[i].upper())
-            else:
-                self.hf += "{}, ".format(self.hash_family[i].upper())
-
-        del self.hash_family
-        return self.hf
 
     def load_table(self, sbf_table):
         """
