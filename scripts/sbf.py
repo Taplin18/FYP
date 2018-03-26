@@ -349,9 +349,7 @@ class sbf:
         """
         self.stats = {
             "Hash family": str(self.hash_family),
-            "Number of hash runs": str(self.num_hashes),
             "Number of cells": str(self.num_cells),
-            "Size in bytes":  str(self.cell_size * self.num_cells)
         }
         return self.stats
 
