@@ -34,15 +34,18 @@
             <nav class="blue lighten-1">
                 <div class="nav-wrapper">
                     <div class="container">
-                        <a href="#" class="brand-logo">Spacial Bloom Filter</a>
+                        <a href="{{ url_for('index') }}" class="brand-logo">Spacial Bloom Filter</a>
                         <ul id="nav-mobile" class="right hide-on-med-and-down">
-                            <li><a href="#">Link_1</a></li>
-                            <li><a href="#">Link_2</a></li>
-                            <li class="active"><a href="#">Link_3</a></li>
+                            <li><a href="#">About</a></li>
                             <!-- Dropdown Trigger -->
                             <li>
                                 <a class="dropdown-button" href="#" data-activates="dropdown1">Cork Maps
                                     <i class="material-icons right">arrow_drop_down</i>
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="#">
+                                    Edit Details<i class="material-icons right">edit</i>
                                 </a>
                             </li>
                         </ul>
@@ -52,96 +55,48 @@
         </div>
 
         <div class="container">
+
             <div class="row">
-                <div class="col s12 m6">
-                    <div class="card horizontal">
-                        <div class="card-content">
-                            <span class="card-title">Cork Data</span>
-                            <div class="section">
-                                <p>
-                                    The map of Cork has four marked Area's of Interest.<br>
-                                    The coordinates of these areas are contained in a csv file.<br>
-                                    Import these Area's of Interest and place them in the Spacial Bloom Filter.
-                                </p>
-                            </div>
-                            <div class="card-action">
-                                <div class="col s6 m6">
-                                    <form action="{{ url_for('import_sbf') }}" method="post">
-                                        <button class="btn waves-effect waves-light blue lighten-1" type="submit">
-                                            Import<i class="material-icons right">file_upload</i>
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="col s6 m6">
-                                    <form action="{{ url_for('clear_sbf') }}" method="post">
-                                        <button class="btn waves-effect waves-light blue lighten-1" type="submit">
-                                            Clear<i class="material-icons right">edit</i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="col s12 m6">
                     <div class="card horizontal">
-                        <div class="card-content">
-                            <span class="card-title">SBF Hash Function Details</span>
-                            <div class="section">
-                                <p>
-                                    The filter is currently set to run three different hash functions.<br>
-                                    Those hash functions are MD5, SHA256 and SHA1.<br>
-                                    These values can be changed.
-                                </p>
-                            </div>
-                            <div class="card-action">
-                                <div class="col s6 m6">
-                                    <form action="#" method="post">
-                                        <button class="btn waves-effect waves-light blue lighten-1 disabled" type="submit">
-                                            Edit<i class="material-icons right">edit</i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col s12 m6">
-                    <div class="card horizontal">
-                        <form action="{{ url_for('check_sbf') }}" method="post">
+                        <div class="card-stacked">
                             <div class="card-content">
-                                <span class="card-title">Check SBF Values</span>
+                                <span class="card-title">The Cork Data</span>
                                 <div class="divider"></div>
                                 <div class="section">
-                                    Value:
-                                    <div class="input-field inline">
-                                        <input type="text" class="validate" name="sbf_check" id="sbf_check">
-                                        <label for="sbf_check">Value</label>
+                                    <p>
+                                        The map of Cork has four marked Area's of Interest.<br>
+                                        The coordinates of these areas are contained in a csv file.<br>
+                                        Import these Area's of Interest and place them in the Spacial Bloom Filter.
+                                    </p>
+                                </div>
+                                <div class="card-action">
+                                    <div class="col s12 m6">
+                                        <form action="{{ url_for('import_sbf') }}" method="post">
+                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit">
+                                                Import<i class="material-icons right">file_upload</i>
+                                            </button>
+                                        </form>
                                     </div>
-                                    <ul class="collection">
-                                        <li class="collection-item">Results:</li>
-                                        {{ check_result }}
-                                    </ul>
+                                    <div class="col s12 m6">
+                                        <form action="{{ url_for('clear_sbf') }}" method="post">
+                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit">
+                                                Clear<i class="material-icons right">clear</i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-action">
-                                <button class="btn waves-effect waves-light blue lighten-1" type="submit">
-                                    Check<i class="material-icons right">check</i>
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col s12 m6">
-                        <div class="card horizontal">
+                <div class="col s12 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
                             <div class="card-content">
-                                <span class="card-title">SBF Stats</span>
+                                <span class="card-title centered">SBF Stats</span>
                                 <div class="divider"></div>
                                 <div class="section">
                                     <ul class="collection">
@@ -152,17 +107,61 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="row">
-                <div class="col s12 m12">
-                    <div class="sbf">
-                        <table id="myTable" class="centered">
-                            <tbody>
-                                {{ sbf_table }}
-                            </tbody>
-                        </table>
+
+                <div class="col s12 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title centered">Check SBF Values</span>
+                                <div class="divider"></div>
+                                <form action="{{ url_for('check_sbf') }}" method="post" class="col s12">
+                                    <div class="row">
+                                        <div class="input-field inline col s12">
+                                            <i class="material-icons prefix">search</i>
+                                            <input type="text" class="validate" name="sbf_check" id="sbf_check">
+                                            <label for="sbf_check">Value</label>
+                                        </div>
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="card-action">
+                                        <button class="btn waves-effect waves-light blue lighten-1" type="submit">
+                                            Check<i class="material-icons right">check</i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="col s12 m6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title centered">Results</span>
+                                <div class="divider"></div>
+
+                                {{ check_result }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s12 m12">
+                <div class="sbf">
+                    <table id="myTable" class="centered">
+                        <tbody>
+                            {{ sbf_table }}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

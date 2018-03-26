@@ -1,6 +1,6 @@
 # Final Year Project
 
-[Spacial Bloom Filter Web Demo](http://52.16.155.2/)
+[Spacial Bloom Filter Web Demo](http://52.50.29.60/)
 
 ### Title ###
 Location Privacy Tool - A Web Demo

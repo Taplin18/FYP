@@ -10,6 +10,9 @@ class Layout:
         self.table = ""
         self.check = ""
 
+    def __del__(self):
+        pass
+
     def load_stats(self, sbf_stats):
         """
         Returns the stats of the filter.
@@ -21,6 +24,8 @@ class Layout:
         self.stats = ""
         for i in range(0, len(k)):
             self.stats += "<li class=\"collection-item\">{}: {}</li>".format(k[i], self.sbf_stats[k[i]])
+
+        del self.sbf_stats
         return self.stats
 
     def load_table(self, sbf_table):
@@ -37,6 +42,8 @@ class Layout:
                 self.table += "</tr><tr>"
             self.table += "<td>{}</td>".format(str(self.sbf_table[i]))
         self.table += "</tr>"
+
+        del self.sbf_table
         return self.table
 
     def load_check_result(self, value, result):
@@ -48,10 +55,15 @@ class Layout:
         """
         self.value = value
         self.result = result
+
+        self.check = "<div class=\"section\"><ul class=\"collection\">"
         if int(self.result) == 0:
             self.check += "<li class=\"collection-item\">{} is not in the filter.</li>".format(str(self.value))
         else:
             self.check += "<li class=\"collection-item\">{} is in area {}.</li>".format(str(self.value),
                                                                                         str(self.result))
+        self.check += "</ul></div>"
 
+        del self.value
+        del self.result
         return self.check
