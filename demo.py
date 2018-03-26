@@ -12,6 +12,7 @@ format_layout = Layout(CELL_NUM)
 my_sbf = sbf(CELL_NUM, HASH_FAM)
 
 
+@app.route('/index')
 @app.route('/')
 def index():
     sbf_table, sbf_stats, check_result = "", "", ""
