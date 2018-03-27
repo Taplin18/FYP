@@ -13,6 +13,7 @@ nav ul a {
 
 table#resultTable.centered th{
     border: 1px solid black;
+    text-align: center;
 }
 
 table#resultTable.centered td{
