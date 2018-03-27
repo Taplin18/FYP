@@ -16,6 +16,7 @@
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"  media="screen,projection"/>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
+
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
         <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
@@ -23,42 +24,68 @@
         <title>FYP</title>
     </head>
     <body>
-        <div class="navbar-fixed">
-            <ul id="dropdown1" class="dropdown-content">
-                <li><a href="{{ url_for('static', filename='dataset/cork.pdf') }}">With Areas of Interest</a></li>
-                <li class="divider"></li>
-                <li><a href="{{ url_for('static', filename='dataset/cork-no-aoi.pdf') }}">No Areas of Interest</a></li>
-                <li class="divider"></li>
-                <li><a href="{{ url_for('static', filename='dataset/cork.csv') }}">Coordinates</a></li>
-            </ul>
-            <nav class="blue lighten-1">
-                <div class="nav-wrapper">
-                    <div class="container">
-                        <a href="{{ url_for('index') }}" class="brand-logo">Spacial Bloom Filter</a>
-                        <ul id="nav-mobile" class="right hide-on-med-and-down">
-                            <li><a href="#">About</a></li>
-                            <!-- Dropdown Trigger -->
+        <ul id="dropdown1" class="dropdown-content">
+            <li><a href="{{ url_for('static', filename='dataset/cork.pdf') }}">With Areas of Interest</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ url_for('static', filename='dataset/cork-no-aoi.pdf') }}">No Areas of Interest</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ url_for('static', filename='dataset/cork.csv') }}">Coordinates</a></li>
+        </ul>
+        <nav class="nav blue lighten-1">
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo left">Spatial Bloom Filter</a>
+                <a href="#" data-activates="mobile-demo" class="button-collapse right"><i class="material-icons">menu</i></a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li>
+                        <a href="#">About</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-button" href="#" data-activates="dropdown1">Cork Maps
+                            <i class="material-icons right">arrow_drop_down</i>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="#">
+                            Edit Details<i class="material-icons right">edit</i>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="side-nav collapsible collapsible-accordion" id="mobile-demo">
+                    <li><a href="#">About<i class="material-icons right">info</i></a></li>
+                    <li>
+                        <a href="#" class="collapsible-header" style="padding: 0 32px;">
+                            Maps<i class="material-icons right">arrow_drop_down</i>
+                        </a>
+                        <div class="collapsible-body">
+                        <ul>
                             <li>
-                                <a class="dropdown-button" href="#" data-activates="dropdown1">Cork Maps
-                                    <i class="material-icons right">arrow_drop_down</i>
+                                <a href="{{ url_for('static', filename='dataset/cork.pdf') }}">
+                                    With Areas of Interest<i class="material-icons">map</i>
                                 </a>
                             </li>
-                            <li class="active">
-                                <a href="#">
-                                    Edit Details<i class="material-icons right">edit</i>
+                            <li>
+                                <a href="{{ url_for('static', filename='dataset/cork-no-aoi.pdf') }}">
+                                    No Areas of Interest<i class="material-icons">map</i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('static', filename='dataset/cork.csv') }}">
+                                    Coordinates<i class="material-icons">map</i>
                                 </a>
                             </li>
                         </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
+                        </div>
+                    </li>
+                    <li><a href="#">Edit Details<i class="material-icons right">edit</i></a></li>
+                </ul>
+            </div>
+        </nav>
 
         <div class="container">
 
             <div class="row">
 
-                <div class="col s12 m6">
+                <div class="col s12 m12 l6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
@@ -72,14 +99,14 @@
                                     </p>
                                 </div>
                                 <div class="card-action">
-                                    <div class="col s12 m6">
+                                    <div class="col s12 m6 l6" style="padding-top: 10px;">
                                         <form action="{{ url_for('import_sbf') }}" method="post">
-                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit">
+                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit"  style="padding-bottom: 10px;">
                                                 Import<i class="material-icons right">file_upload</i>
                                             </button>
                                         </form>
                                     </div>
-                                    <div class="col s12 m6">
+                                    <div class="col s12 m6 l6" style="padding-top: 10px;">
                                         <form action="{{ url_for('clear_sbf') }}" method="post">
                                             <button class="btn waves-effect waves-light blue lighten-1" type="submit">
                                                 Clear<i class="material-icons right">clear</i>
@@ -92,7 +119,7 @@
                     </div>
                 </div>
 
-                <div class="col s12 m6">
+                <div class="col s12 m12 l6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
@@ -112,7 +139,7 @@
 
             <div class="row">
 
-                <div class="col s12 m6">
+                <div class="col s12 m12 l6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
@@ -138,14 +165,18 @@
                     </div>
                 </div>
 
-                <div class="col s12 m6">
+                <div class="col s12 m12 l6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
                                 <span class="card-title centered">Results</span>
                                 <div class="divider"></div>
-
-                                {{ check_result }}
+                                <table id="resultTable" class="centered responsive-table">
+                                    {{ check_result_table }}
+                                </table>
+                                <div>
+                                    <p>{{ check_result_conclusion }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -155,14 +186,10 @@
         </div>
 
         <div class="row">
-            <div class="col s12 m12">
-                <div class="sbf">
-                    <table id="myTable" class="centered">
-                        <tbody>
-                            {{ sbf_table }}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="col s12 m12 l12">
+                <table id="sbfTable" class="centered responsive-table">
+                    {{ sbf_table }}
+                </table>
             </div>
         </div>
 

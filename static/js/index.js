@@ -1,6 +1,5 @@
-nboxes = 32;
-strings = [];
-
 $(function() {
     $('.dropdown-button').dropdown();
+    $(".button-collapse").sideNav();
 });
+

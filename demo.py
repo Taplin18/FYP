@@ -15,21 +15,24 @@ my_sbf = sbf(CELL_NUM, HASH_FAM)
 @app.route('/index')
 @app.route('/')
 def index():
-    sbf_table, sbf_stats, check_result = "", "", ""
     sbf_table = format_layout.load_table(my_sbf.get_filter())
     sbf_stats = format_layout.load_stats(my_sbf.get_stats())
+    check_result_table, check_result_conclusion = format_layout.no_check_result()
 
     session['sbf_table'] = sbf_table
     session['sbf_stats'] = sbf_stats
-    session['check_result'] = check_result
+    session['check_result_table'] = check_result_table
+    session['check_result_conclusion'] = check_result_conclusion
 
     return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result=Markup(check_result))
+                           check_result_table=Markup(check_result_table),
+                           check_result_conclusion=Markup(check_result_conclusion))
 
 
 @app.route('/import_sbf', methods=['POST'])
 def import_sbf():
-    check_result = session.get('check_result')
+    check_result_table = session.get('check_result_table')
+    check_result_conclusion = session.get('check_result_conclusion')
 
     my_sbf.insert_from_file()
     sbf_table = format_layout.load_table(my_sbf.get_filter())
@@ -39,26 +42,29 @@ def import_sbf():
     session['sbf_stats'] = sbf_stats
 
     return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result=Markup(check_result))
+                           check_result_table=Markup(check_result_table),
+                           check_result_conclusion=Markup(check_result_conclusion))
 
 
 @app.route('/check_sbf', methods=['POST'])
 def check_sbf():
     if request.method == 'POST':
         result = request.form
+        value = result['sbf_check']
 
-        sbf_table = session.get('sbf_table')
         sbf_stats = session.get('sbf_stats')
-
-        check_result = format_layout.load_check_result(result['sbf_check'], my_sbf.check(result['sbf_check']))
+        check_result_table, check_result_conclusion = format_layout.load_check_result(value, my_sbf.check(value))
+        sbf_table = format_layout.highlight_table(my_sbf.get_filter(), my_sbf.check(result['sbf_check']))
 
         return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                               check_result=Markup(check_result))
+                               check_result_table=Markup(check_result_table),
+                               check_result_conclusion=Markup(check_result_conclusion))
 
 
 @app.route('/clear_sbf', methods=['POST'])
 def clear_sbf():
-    check_result = session.get('check_result')
+    check_result_table = session.get('check_result_table')
+    check_result_conclusion = session.get('check_result_conclusion')
 
     my_sbf.clear_filter()
     sbf_table = format_layout.load_table(my_sbf.get_filter())
@@ -68,7 +74,8 @@ def clear_sbf():
     session['sbf_stats'] = sbf_stats
 
     return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result=Markup(check_result))
+                           check_result_table=Markup(check_result_table),
+                           check_result_conclusion=Markup(check_result_conclusion))
 
 
 if __name__ == '__main__':
