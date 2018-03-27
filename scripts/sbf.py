@@ -284,8 +284,8 @@ class sbf:
         """
 
         self.element = element
-        self.area = 0
         self.current_area = 0
+        self.value_indexes = {}
 
         # Computes the hash digest of the input 'num_hashes' times; each
         # iteration combines the input string with a different hash salt
@@ -314,15 +314,7 @@ class sbf:
 
                 self.current_area = self.filter[self.index]
 
-                # If one hash points to an empty cell, the element does not belong
-                # to any set.
-                if self.current_area == 0:
-                    return 0
-                # Otherwise, stores the lower area label, among those which were returned
-                elif self.area == 0:
-                    self.area = self.current_area
-                elif self.current_area < self.area:
-                    self.area = self.current_area
+                self.value_indexes[self.i] = [self.index, self.current_area]
 
         del self.buffer
         del self.digest
@@ -333,7 +325,7 @@ class sbf:
         del self.index
         del self.element
 
-        return self.area
+        return self.value_indexes
 
     def get_filter(self):
         """

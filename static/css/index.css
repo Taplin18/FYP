@@ -1,3 +1,24 @@
-table#myTable.centered tbody td {
+nav {
+    height: 70px;
+    line-height: 70px;
+}
+
+nav .brand-logo {
+    padding-left: 10px;
+}
+
+nav ul a {
+    font-size: 1.2rem;
+}
+
+table#resultTable.centered th{
+    border: 1px solid black;
+}
+
+table#resultTable.centered td{
+    border: 1px solid black;
+}
+
+table#sbfTable.centered td{
     border: 1px solid black;
 }
