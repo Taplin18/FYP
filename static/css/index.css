@@ -1,14 +1,5 @@
-nav {
-    height: 70px;
-    line-height: 70px;
-}
-
 nav .brand-logo {
     padding-left: 10px;
-}
-
-nav ul a {
-    font-size: 1.2rem;
 }
 
 table#resultTable.centered th{

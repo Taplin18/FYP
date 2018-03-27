@@ -69,9 +69,10 @@ class Layout:
             if (i % 64 == 0) and (i != 0):
                 self.table += "</tr><tr>"
             if i in self.indexes:
-                self.table += "<td style=\"background-color: red\">{}</td>".format(str(self.sbf_table[i]))
+                self.table += "<td id=\"{}\" style=\"background-color: red\">{}</td>".format(str(i),
+                                                                                             str(self.sbf_table[i]))
             else:
-                self.table += "<td>{}</td>".format(str(self.sbf_table[i]))
+                self.table += "<td id=\"{}\" >{}</td>".format(str(i), str(self.sbf_table[i]))
         self.table += "</tr>"
 
         del self.sbf_table
@@ -94,7 +95,9 @@ class Layout:
         self.check = "<tr>{}".format(str(self._result_header()))
 
         for i in self.hash_family:
-            self.check += "<td>{}</td>".format(str(self.results[i][1]))
+            self.check += "<td><a href=\"#{}\" onclick=\"changeColor({})\">{}</a></td>".format(str(self.results[i][0]),
+                                                                                               str(self.results[i][0]),
+                                                                                               str(self.results[i][1]))
             self.areas.append(self.results[i][1])
         self.check += "</tr>"
 
