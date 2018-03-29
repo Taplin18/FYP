@@ -60,6 +60,12 @@ class Layout:
         return self.table
 
     def highlight_table(self, sbf_table, results):
+        """
+        Return the table contents with the check values highlighted.
+        :param sbf_table: an array of the filter.
+        :param results: a dictionary with the hash function as the key and list [index, area] as the value.
+        :return: a string of HTML to display the contents of the filter with highlighted vaules.
+        """
         self.sbf_table = sbf_table
         self.results = results
         self.indexes = self._get_indexes(self.results)
@@ -69,10 +75,13 @@ class Layout:
             if (i % 64 == 0) and (i != 0):
                 self.table += "</tr><tr>"
             if i in self.indexes:
-                self.table += "<td id=\"{}\" style=\"background-color: red\">{}</td>".format(str(i),
-                                                                                             str(self.sbf_table[i]))
+                self.table += "<td class=\"tooltip\" id=\"{}\" style=\"background-color: red\">" \
+                              "{}" \
+                              "<span class=\"tooltiptext\">{}</span>" \
+                              "</td>".format(str(i), str(self.sbf_table[i]), str(self._tooltip(i, self.results)))
             else:
-                self.table += "<td id=\"{}\" >{}</td>".format(str(i), str(self.sbf_table[i]))
+                self.table += "<td id=\"{}\" >{}</td>".format(str(i),
+                                                              str(self.sbf_table[i]))
         self.table += "</tr>"
 
         del self.sbf_table
@@ -95,9 +104,7 @@ class Layout:
         self.check = "<tr>{}".format(str(self._result_header()))
 
         for i in self.hash_family:
-            self.check += "<td><a href=\"#{}\" onclick=\"changeColor({})\">{}</a></td>".format(str(self.results[i][0]),
-                                                                                               str(self.results[i][0]),
-                                                                                               str(self.results[i][1]))
+            self.check += "<td><a href=\"#{}\">{}</a></td>".format(str(self.results[i][0]), str(self.results[i][1]))
             self.areas.append(self.results[i][1])
         self.check += "</tr>"
 
@@ -114,6 +121,24 @@ class Layout:
         del self.areas
         del self.min_area
         return self.check, self.conclusion
+
+    def _tooltip(self, index, results):
+        """
+        Get the hash function to display in the tooltip.
+        :param index: the index value.
+        :param results: a dictionary with the hash function as the key and list [index, area] as the value.
+        :return: the hash function to display in the tooltip.
+        """
+        self.index = index
+        self.results = results
+        self.cnt = 0
+        self.k = list(self.results.keys())
+        self.v = list(self.results.values())
+
+        for i in self.v:
+            if i[0] == self.index:
+                return self.k[self.cnt].upper()
+            self.cnt += 1
 
     def no_check_result(self):
         self.check = "<tr>{}".format(str(self._result_header()))
