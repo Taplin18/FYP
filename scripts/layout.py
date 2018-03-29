@@ -102,12 +102,11 @@ class Layout:
         """
         self.value = value
         self.results = results
-        self.indexes = self._get_indexes(self.results)
         self.areas = []
         self.conclusion = ""
         self.check = "<tr>{}".format(str(self._result_header()))
 
-        for i in self.indexes:
+        for i in self.hash_family:
             self.check += "<td><a href=\"#{}\">{}</a></td>".format(str(self.results[i][0]), str(self.results[i][1]))
             self.areas.append(self.results[i][1])
         self.check += "</tr>"
@@ -121,7 +120,6 @@ class Layout:
 
         del self.value
         del self.results
-        del self.indexes
         del self.areas
         del self.min_area
         return self.check, self.conclusion
