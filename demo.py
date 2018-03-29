@@ -35,6 +35,7 @@ def import_sbf():
     check_result_conclusion = session.get('check_result_conclusion')
 
     my_sbf.insert_from_file()
+    my_sbf.update_stats()
     sbf_table = format_layout.load_table(my_sbf.get_filter())
     sbf_stats = format_layout.load_stats(my_sbf.get_stats())
 
