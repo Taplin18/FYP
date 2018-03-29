@@ -225,8 +225,7 @@ class sbf:
         with open(self.dataset_path, 'r') as self.dataset_file:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
             for self.row in self.dataset_reader:
-                if int(self.row[0]) in [1, 2, 3, 4]:
-                    self.insert(self.row[1], int(self.row[0]))
+                self.insert(self.row[1], int(self.row[0]))
 
         self.insert_file_list.append(self.dataset_path)
 

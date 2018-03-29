@@ -80,5 +80,11 @@ def clear_sbf():
                            check_result_conclusion=Markup(check_result_conclusion))
 
 
+@app.route('/cork_csv')
+def cork_csv():
+    csv_table = format_layout.csv_table()
+    return render_template('cork-csv.html', csv_table=Markup(csv_table))
+
+
 if __name__ == '__main__':
     app.run()

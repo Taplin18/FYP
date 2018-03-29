@@ -1,4 +1,6 @@
 import ast
+import csv
+from pathlib import Path
 
 
 class Layout:
@@ -8,6 +10,8 @@ class Layout:
         Initialises stats and table layout.
         :param num_cells: the number of cells in the filter (2^num_cells).
         """
+        self.dataset = self._get_dataset_path()
+        self.delimiter = ','
         self.num_cells = num_cells
         self.stats = ""
         self.table = ""
@@ -103,7 +107,7 @@ class Layout:
         self.conclusion = ""
         self.check = "<tr>{}".format(str(self._result_header()))
 
-        for i in self.hash_family:
+        for i in self.indexes:
             self.check += "<td><a href=\"#{}\">{}</a></td>".format(str(self.results[i][0]), str(self.results[i][1]))
             self.areas.append(self.results[i][1])
         self.check += "</tr>"
@@ -121,6 +125,27 @@ class Layout:
         del self.areas
         del self.min_area
         return self.check, self.conclusion
+
+    def no_check_result(self):
+        """
+        Return an empty table body when no value has been checked.
+        :return: the HTML of an empty table body.
+        """
+        self.check = "<tr>{}".format(str(self._result_header()))
+
+        for i in range(0, len(self.hash_family)):
+            self.check += "<td></td>"
+        self.check += "</tr>"
+
+        return self.check, self.conclusion
+
+    def csv_table(self):
+        self.csv_layout = ""
+        with open(self.dataset, 'r') as dataset_file:
+            dataset_reader = csv.reader(dataset_file, delimiter=self.delimiter)
+            for row in dataset_reader:
+                self.csv_layout += "<tr><td>{}</td><td>{}</td></tr>".format(row[0], row[1])
+        return self.csv_layout
 
     def _tooltip(self, index, results):
         """
@@ -140,16 +165,12 @@ class Layout:
                 return self.k[self.cnt].upper()
             self.cnt += 1
 
-    def no_check_result(self):
-        self.check = "<tr>{}".format(str(self._result_header()))
-
-        for i in range(0, len(self.hash_family)):
-            self.check += "<td></td>"
-        self.check += "</tr>"
-
-        return self.check, self.conclusion
-
     def _get_indexes(self, results):
+        """
+        Extract the filter index from the check result.
+        :param results: a dictionary with the hash function as the key and list [index, area] as the value.
+        :return: the indexes of the check result.
+        """
         self.results = results
         self.index_list = []
 
@@ -159,6 +180,10 @@ class Layout:
         return self.index_list
 
     def _result_header(self):
+        """
+        Return the table header which contains the hash function names.
+        :return: the HTML of of the table header.
+        """
         self.result_header = ""
 
         for i in self.hash_family:
@@ -166,3 +191,14 @@ class Layout:
         self.result_header += "</tr><tr>"
 
         return self.result_header
+
+    def _get_dataset_path(self):
+        """
+        Returns the correct path to the cork csv.
+        :return: the path to the cork csv.
+        """
+        aws = "/var/www/demo/dataset/cork.csv"
+        if Path(aws).is_file():
+            return aws
+        else:
+            return "dataset/cork.csv"

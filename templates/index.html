@@ -16,7 +16,6 @@
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"  media="screen,projection"/>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
-
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
         <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
@@ -29,7 +28,7 @@
             <li class="divider"></li>
             <li><a href="{{ url_for('static', filename='dataset/cork-no-aoi.pdf') }}">No Areas of Interest</a></li>
             <li class="divider"></li>
-            <li><a href="{{ url_for('static', filename='dataset/cork.csv') }}">Coordinates</a></li>
+            <li><a href="{{ url_for('cork_csv') }}">Coordinates</a></li>
         </ul>
         <nav class="nav blue lighten-1">
             <div class="nav-wrapper">
@@ -69,7 +68,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ url_for('static', filename='dataset/cork.csv') }}">
+                                <a href="{{ url_for('cork_csv') }}">
                                     Coordinates<i class="material-icons">map</i>
                                 </a>
                             </li>
