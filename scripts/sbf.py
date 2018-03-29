@@ -86,6 +86,10 @@ class sbf:
         self.area_self_collisions = [0] * (self.num_areas + 1)
         # list of file from which elements have been inserted
         self.insert_file_list = []
+        self.stats = {
+            "Hash family": str(self.hash_family),
+            "Number of cells": str(self.num_cells),
+        }
         del self.i
 
     def __del__(self):
@@ -327,6 +331,46 @@ class sbf:
 
         return self.value_indexes
 
+    def update_stats(self, precision=4):
+        """
+        Update the stats about the SBF filter.
+        """
+        self.precision = precision
+        self.stats["Filter sparsity"] = str('{:.{prec}f}'.format(round(self._filter_sparsity(), self.precision),
+                                                                 prec=self.precision))
+        self.stats["Filter false positive probability"] = str('{:.{prec}f}'.format(round(self._filter_fpp(),
+                                                                                         self.precision),
+                                                                                   prec=self.precision))
+
+    def _filter_sparsity(self):
+        """
+        Returns the sparsity of the entire SBF filter.
+        :return: the filter sparsity
+        """
+
+        self.sparsity_sum = 0
+
+        for self.i in range(1, self.num_areas + 1):
+            self.sparsity_sum += self.area_cells[self.i]
+
+        return 1 - (self.sparsity_sum / self.num_cells)
+
+    def _filter_fpp(self):
+        """
+        Computes the a-posteriori false positive probability over the entire filter.
+        :return: the filter a-posteriori fpp.
+        """
+
+        self.c = 0
+
+        # Counts non-zero cells
+        for self.i in range(1, self.num_areas + 1):
+            self.c += self.area_cells[self.i]
+
+        self.p = self.c / self.num_cells
+
+        return pow(self.p, self.num_hashes)
+
     def get_filter(self):
         """
         Returns the filter.
@@ -339,10 +383,6 @@ class sbf:
         Returns a dictionary of statistics of the SBF.
         :return: a dictionary of stats.
         """
-        self.stats = {
-            "Hash family": str(self.hash_family),
-            "Number of cells": str(self.num_cells),
-        }
         return self.stats
 
     def clear_filter(self):
@@ -356,6 +396,10 @@ class sbf:
         self.area_cells = [0] * (self.num_areas + 1)
         self.area_self_collisions = [0] * (self.num_areas + 1)
         self.insert_file_list = []
+        self.stats = {
+            "Hash family": str(self.hash_family),
+            "Number of cells": str(self.num_cells),
+        }
 
     def _bits_of(self, byte, nbits):
         """
