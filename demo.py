@@ -86,5 +86,10 @@ def cork_csv():
     return render_template('cork-csv.html', csv_table=Markup(csv_table))
 
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
 if __name__ == '__main__':
     app.run()

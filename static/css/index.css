@@ -39,6 +39,10 @@ nav .brand-logo {
     opacity: 1;
 }
 
+.card .card-content p {
+    font-size: 17px;
+}
+
 table#resultTable.centered th{
     border: 1px solid black;
     text-align: center;

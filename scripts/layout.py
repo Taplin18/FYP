@@ -115,8 +115,9 @@ class Layout:
         if self.min_area == 0:
             self.conclusion += "The value {} is not in the spatial bloom filter.".format(str(self.value))
         else:
-            self.conclusion += "The value {} is in area {} as that is the lowest area.".format(str(self.value),
-                                                                                               str(self.min_area))
+            self.conclusion += "As cells can be overwritten, the lowest area is the answer..<br> " \
+                               "{} is in area {}.".format(str(self.value),
+                                                          str(self.min_area))
 
         del self.value
         del self.results
