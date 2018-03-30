@@ -129,6 +129,7 @@ class Layout:
         Return an empty table body when no value has been checked.
         :return: the HTML of an empty table body.
         """
+        self.conclusion = ""
         self.check = "<tr>{}".format(str(self._result_header()))
 
         for i in range(0, len(self.hash_family)):
