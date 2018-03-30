@@ -340,6 +340,8 @@ class sbf:
         self.stats["Filter false positive probability"] = str('{:.{prec}f}'.format(round(self._filter_fpp(),
                                                                                          self.precision),
                                                                                    prec=self.precision))
+        self.stats['Number of mapped elements'] = str(self.members)
+        self.stats['Number of hash collisions'] = str(self.collisions)
 
     def _filter_sparsity(self):
         """
