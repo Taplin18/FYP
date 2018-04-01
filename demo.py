@@ -91,8 +91,13 @@ def cork_csv():
 
 @app.route('/about')
 def about():
+    return render_template('about.html')
+
+
+@app.route('/values')
+def values():
     incorrect_values = session.get('incorrect_values')
-    return render_template('about.html', incorrect_values=Markup(incorrect_values))
+    return render_template('values.html', incorrect_values=Markup(incorrect_values))
 
 
 @app.route('/back')
