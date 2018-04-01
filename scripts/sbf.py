@@ -163,7 +163,7 @@ class sbf:
 
         return self.hash_salts
 
-    def insert(self, element, area):
+    def _insert(self, element, area):
         """
         Inserts an element into the SBF filter.
         For each hash function, internal method set_cell is called, passing elements coupled with the area labels.
@@ -225,7 +225,7 @@ class sbf:
         with open(self.dataset_path, 'r') as self.dataset_file:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
             for self.row in self.dataset_reader:
-                self.insert(self.row[1], int(self.row[0]))
+                self._insert(self.row[1], int(self.row[0]))
 
         self.insert_file_list.append(self.dataset_path)
 
@@ -401,6 +401,35 @@ class sbf:
             "Hash family": str(self.hash_family),
             "Number of cells": str(self.num_cells),
         }
+
+    def incorrect_values(self):
+        """
+        Create a dictionary of coordinates where its area has been overwritten.
+        The coordinate is the key with and list [real_area, [returned areas]] as the key.
+        :return: a dictionary of incorrect checks.
+        """
+        self.dataset_path = self._get_dataset_path()
+        self.dataset_delimiter = ','
+
+        incorrect_areas = {}
+        with open(self.dataset_path, 'r') as self.dataset_file:
+            self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
+            for row in self.dataset_reader:
+                self.check_val = self.check(row[1])
+                self.areas = []
+                for hf in self.hash_family:
+                    self.areas.append(self.check_val[hf][1])
+                if str(min(int(m) for m in self.areas)) != row[0]:
+                    incorrect_areas[row[1]] = [int(row[0]), self.areas]
+
+        del self.dataset_path
+        del self.dataset_delimiter
+        del self.dataset_file
+        del self.dataset_reader
+        del self.check_val
+        del self.areas
+
+        return incorrect_areas
 
     def _bits_of(self, byte, nbits):
         """

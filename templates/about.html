@@ -32,11 +32,11 @@
         </ul>
         <nav class="nav blue lighten-1">
             <div class="nav-wrapper">
-                <a href="{{ url_for('index') }}" class="brand-logo left">Spatial Bloom Filter</a>
+                <a href="{{ url_for('back') }}" class="brand-logo left">Spatial Bloom Filter</a>
                 <a href="#" data-activates="mobile-demo" class="button-collapse right"><i class="material-icons">menu</i></a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li>
-                        <a href="#">About</a>
+                        <a href="{{ url_for('about') }}">About</a>
                     </li>
                     <li>
                         <a class="dropdown-button" href="#" data-activates="dropdown1">Cork Maps
@@ -50,7 +50,7 @@
                     </li>
                 </ul>
                 <ul class="side-nav collapsible collapsible-accordion" id="mobile-demo">
-                    <li><a href="#">About<i class="material-icons right">info</i></a></li>
+                    <li><a href="{{ url_for('about') }}">About<i class="material-icons right">info</i></a></li>
                     <li>
                         <a href="#" class="collapsible-header" style="padding: 0 32px;">
                             Maps<i class="material-icons right">arrow_drop_down</i>
@@ -84,63 +84,87 @@
 
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <div class="card horizontal">
-                        <div class="card-stacked">
-                            <div class="card-content" id="what-sbf">
-                                <span class="card-title">What is a Spatial Bloom Filter?</span>
-                                <div class="divider"></div>
-                                <div class="section">
-                                    <p>
-                                        Location privacy is a growing issue in cybersecurity.<br>
+                    <ul class="collection with-header">
+                        <li class="collection-header"><h5>What is a Spatial Bloom Filter?</h5></li>
+                        <li class="collection-item">
+                            Location privacy is a growing issue in cybersecurity.
+                        </li>
+                        <li class="collection-item">
+                            The spatial bloom filter is one of the many privacy-preserving protocols
+                            aimed at mitigating this threat to personal privacy.
+                        </li>
+                        <li class="collection-item">
+                            The spatial bloom filter is a data structure based on bloom filters, designed
+                            to store location information.
+                        </li>
+                        <li class="collection-item">
+                            The protocol keeps the user's exact location hidden but allows the provider
+                            of the service to learn when the user is close to specific points of
+                            interest or inside predefined areas.
+                        </li>
+                        <li class="collection-item">
+                            At the same time, the points and areas of interest remain oblivious
+                            to the user.
+                        </li>
 
-                                        The spatial bloom filter is one of the many privacy-preserving protocols
-                                        aimed at mitigating this threat to personal privacy.<br>
-
-                                        The spatial bloom filter is a data structure based on bloom filters, designed
-                                        to store location information.<br>
-
-                                        The protocol keeps the user's exact location hidden but allows the provider of
-                                        the service to learn when the user is close to specific points of interest or
-                                        inside predefined areas. At the same time, the points and areas of interest
-                                        remain oblivious to the user.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </ul>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <div class="card horizontal">
-                        <div class="card-stacked">
-                            <div class="card-content" id="cork-dataset">
-                                <span class="card-title">The Cork dataset</span>
-                                <div class="divider"></div>
-                                <div class="section">
-                                    <p>
-                                        There are four Areas of Interest marked on the map of Cork and each area
-                                        has a set of coordinates associated with it.<br>
-
-                                        There is a geospatial grid placed on the map which allows the coordinates
-                                        that are extracted to be accurate to 0.0001 of a degree.
-                                        The coordinates for are taken from the bottom-left of each cell.<br>
-
-                                        When the dataset is imported, it is the Area od Interest number that is placed
-                                        in the SBF.
-                                        Each coordinate is placed in the SBF three times as there is three hash
-                                        functions.<br>
-
-                                        As there is many values placed into the SBF, the Area of Interest number can
-                                        be overwritten by the new values that are being inserted.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <ul class="collection with-header">
+                        <li class="collection-header"><h5>The Cork dataset</h5></li>
+                        <li class="collection-item">
+                            There are four Areas of Interest marked on the map of Cork and each area
+                            has a set of coordinates associated with it.
+                        </li>
+                        <li class="collection-item">
+                            There is a geospatial grid placed on the map which allows the coordinates
+                            that are extracted to be accurate to 0.0001 of a degree.
+                        </li>
+                        <li class="collection-item">
+                            The coordinates for are taken from the bottom-left of each cell.
+                        </li>
+                        <li class="collection-item">
+                            When the dataset is imported, it is the Area od Interest number that is
+                            placed in the SBF.
+                        </li>
+                        <li class="collection-item">
+                            Each coordinate is placed in the SBF three times as there is three
+                            hash functions.
+                        </li>
+                        <li class="collection-item">
+                            As there is many values placed into the SBF, the Area of Interest
+                            number can be overwritten by the new values that are being inserted.
+                        </li>
+                        <li class="collection-item">
+                            <a href="#incorrect">
+                                Check table below for coordinates that are now incorrect as their
+                                areas have been overwritten.
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <h5>Values that give incorrect answers</h5>
+                    <table class="centered striped" id="incorrect">
+                        <thead>
+                            <tr>
+                                <th>Coordinate</th>
+                                <th>Actual Area</th>
+                                <th>Lowest Area in SBF</th>
+                                <th>Areas in SBF</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{ incorrect_values }}</tbody>
+                    </table>
+                </div>
+            </div>
+
 
         </div>
 
