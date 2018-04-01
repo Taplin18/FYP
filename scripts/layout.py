@@ -115,8 +115,9 @@ class Layout:
         if self.min_area == 0:
             self.conclusion += "The value {} is not in the spatial bloom filter.".format(str(self.value))
         else:
-            self.conclusion += "The value {} is in area {} as that is the lowest area.".format(str(self.value),
-                                                                                               str(self.min_area))
+            self.conclusion += "As cells can be overwritten, the lowest area is the answer..<br> " \
+                               "{} is in area {}.".format(str(self.value),
+                                                          str(self.min_area))
 
         del self.value
         del self.results
@@ -139,12 +140,39 @@ class Layout:
         return self.check, self.conclusion
 
     def csv_table(self):
+        """
+        Return a table of the cork.csv contents
+        :return: the HTML of a table containing the cork.csv contents.
+        """
         self.csv_layout = ""
         with open(self.dataset, 'r') as dataset_file:
             dataset_reader = csv.reader(dataset_file, delimiter=self.delimiter)
             for row in dataset_reader:
                 self.csv_layout += "<tr><td>{}</td><td>{}</td></tr>".format(row[0], row[1])
         return self.csv_layout
+
+    def incorrect_areas(self, incorrect_vals):
+        """
+        Return the information about the coordinates with the wrong area.
+        :param incorrect_vals: a dictionary with the coordinate as the key and list [real_area, [returned areas]] as
+                               the value.
+        :return: HTML of table containing the incorrect values.
+        """
+        self.incorrect_vals = incorrect_vals
+        self.coordinates = list(self.incorrect_vals.keys())
+        self.incorrect = ""
+
+        for i in self.coordinates:
+            self.a = self.incorrect_vals[i]
+            self.incorrect += "<tr><td>{}</td>" \
+                              "<td>{}</td>" \
+                              "<td>{}</td>" \
+                              "<td>{}</td></tr>".format(i, self.a[0], min(int(m) for m in self.a[1]), self.a[1])
+        del self.incorrect_vals
+        del self.coordinates
+        del self.a
+
+        return self.incorrect
 
     def _tooltip(self, index, results):
         """

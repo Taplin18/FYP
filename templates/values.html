@@ -20,7 +20,7 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
         <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
 
-        <title>Cork CSV</title>
+        <title>Test Values</title>
     </head>
     <body>
         <ul id="dropdown1" class="dropdown-content">
@@ -28,7 +28,7 @@
             <li class="divider"></li>
             <li><a href="{{ url_for('static', filename='dataset/cork-no-aoi.pdf') }}">No Areas of Interest</a></li>
             <li class="divider"></li>
-            <li><a href="{{ url_for('static', filename='dataset/cork.csv') }}">Coordinates</a></li>
+            <li><a href="{{ url_for('cork_csv') }}">Coordinates</a></li>
         </ul>
         <nav class="nav blue lighten-1">
             <div class="nav-wrapper">
@@ -55,6 +55,11 @@
                 <ul class="side-nav collapsible collapsible-accordion" id="mobile-demo">
                     <li><a href="{{ url_for('about') }}">About<i class="material-icons right">info</i></a></li>
                     <li>
+                        <a href="{{ url_for('values') }}">
+                            Test Data<i class="material-icons right">assignment</i>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" class="collapsible-header" style="padding: 0 32px;">
                             Maps<i class="material-icons right">arrow_drop_down</i>
                         </a>
@@ -71,7 +76,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ url_for('static', filename='dataset/cork.csv') }}">
+                                <a href="{{ url_for('cork_csv') }}">
                                     Coordinates<i class="material-icons">map</i>
                                 </a>
                             </li>
@@ -84,20 +89,25 @@
         </nav>
 
         <div class="container">
+
             <div class="row">
-                <h4>The contents of the Cork csv file</h4>
-                <table class="centered highlight">
-                    <thead>
-                        <tr>
-                            <th>Area of Interest</th>
-                            <th>Coordinate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{ csv_table }}
-                    </tbody>
-                </table>
+                <div class="col s12 m12 l12">
+                    <h5>Coordinates that give incorrect Area of Interest value</h5>
+                    <table class="centered striped" id="incorrect">
+                        <thead>
+                            <tr>
+                                <th>Coordinate</th>
+                                <th>Actual Area</th>
+                                <th>Lowest Area in SBF</th>
+                                <th>Areas in SBF</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{ incorrect_values }}</tbody>
+                    </table>
+                </div>
             </div>
+
+
         </div>
 
     </body>
