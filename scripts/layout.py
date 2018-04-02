@@ -68,7 +68,7 @@ class Layout:
         Return the table contents with the check values highlighted.
         :param sbf_table: an array of the filter.
         :param results: a dictionary with the hash function as the key and list [index, area] as the value.
-        :return: a string of HTML to display the contents of the filter with highlighted vaules.
+        :return: a string of HTML to display the contents of the filter with highlighted values.
         """
         self.sbf_table = sbf_table
         self.results = results
@@ -93,15 +93,18 @@ class Layout:
         del self.indexes
         return self.table
 
-    def load_check_result(self, value, results):
+    def load_check_result(self, value, results, incor_vals):
         """
         Returns the results of the check.
         :param value: the value that was checked.
         :param results: a dictionary with the hash function as the key and list [index, area] as the value.
+        :param incor_vals: a dictionary with the coordinate as the key and list [real_area, [returned areas]] as
+                               the value.
         :return: a string of HTML to display the result of the check (a table and a conclusion).
         """
         self.value = value
         self.results = results
+        self.incor_vals = incor_vals
         self.areas = []
         self.conclusion = ""
         self.check = "<tr>{}".format(str(self._result_header()))
@@ -112,15 +115,19 @@ class Layout:
         self.check += "</tr>"
 
         self.min_area = min(int(m) for m in self.areas)
-        if self.min_area == 0:
-            self.conclusion += "The value {} is not in the spatial bloom filter.".format(str(self.value))
+        if self.incor_vals.get(value) is not None:
+            self.conclusion += "<li>{} is in Area of Interest {}.</li>" \
+                               "<li>However, it really belongs to Area of Interest" \
+                               " {} but the cells were overwritten.</li>".format(str(self.value), str(self.min_area),
+                                                                                 str(self.incor_vals[self.value][0]))
+        elif self.min_area == 0:
+            self.conclusion += "<li>{} is not in the SBF.</li>".format(str(self.value))
         else:
-            self.conclusion += "As cells can be overwritten, the lowest area is the answer..<br> " \
-                               "{} is in area {}.".format(str(self.value),
-                                                          str(self.min_area))
+            self.conclusion += "<li>{} is in AoI {}.</li>".format(str(self.value), str(self.min_area))
 
         del self.value
         del self.results
+        del self.incor_vals
         del self.areas
         del self.min_area
         return self.check, self.conclusion
@@ -219,7 +226,8 @@ class Layout:
 
         return self.result_header
 
-    def _get_dataset_path(self):
+    @staticmethod
+    def _get_dataset_path():
         """
         Returns the correct path to the cork csv.
         :return: the path to the cork csv.

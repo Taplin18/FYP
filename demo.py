@@ -57,7 +57,8 @@ def check_sbf():
         value = result['sbf_check']
 
         sbf_stats = session.get('sbf_stats')
-        check_result_table, check_result_conclusion = format_layout.load_check_result(value, my_sbf.check(value))
+        check_result_table, check_result_conclusion = format_layout.load_check_result(value, my_sbf.check(value),
+                                                                                      my_sbf.incorrect_values())
         sbf_table = format_layout.highlight_table(my_sbf.get_filter(), my_sbf.check(value))
 
         return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
