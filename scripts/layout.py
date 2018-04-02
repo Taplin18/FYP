@@ -121,9 +121,9 @@ class Layout:
                                " {} but the cells were overwritten.</li>".format(str(self.value), str(self.min_area),
                                                                                  str(self.incor_vals[self.value][0]))
         elif self.min_area == 0:
-            self.conclusion += "<li>{} is not in the SBF.</li>".format(str(self.value))
+            self.conclusion += "<li>{} is not in the filter.</li>".format(str(self.value))
         else:
-            self.conclusion += "<li>{} is in AoI {}.</li>".format(str(self.value), str(self.min_area))
+            self.conclusion += "<li>{} is in Area od Interest {}.</li>".format(str(self.value), str(self.min_area))
 
         del self.value
         del self.results
