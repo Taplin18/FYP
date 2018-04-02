@@ -101,7 +101,8 @@
                                 <div class="section">
                                     <p>
                                         The map of Cork has four marked Area's of Interest.<br>
-                                        The coordinates of these areas are contained in a csv file.<br>
+                                        The <a href="{{ url_for('cork_csv') }}">coordinates</a> of these areas are
+                                        contained in a csv file.<br>
                                         Import these Area's of Interest and place them in the Spacial Bloom Filter.<br>
                                         Check out <a href="{{ url_for('about') }}">About</a> for more information.
                                     </p>
@@ -182,9 +183,9 @@
                                 <table id="resultTable" class="centered responsive-table">
                                     {{ check_result_table }}
                                 </table>
-                                <div>
-                                    <p>{{ check_result_conclusion }}</p>
-                                </div>
+                                <ul>
+                                    {{ check_result_conclusion }}
+                                </ul>
                             </div>
                         </div>
                     </div>
