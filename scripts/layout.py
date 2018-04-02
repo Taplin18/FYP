@@ -123,7 +123,7 @@ class Layout:
         elif self.min_area == 0:
             self.conclusion += "<li>{} is not in the filter.</li>".format(str(self.value))
         else:
-            self.conclusion += "<li>{} is in Area od Interest {}.</li>".format(str(self.value), str(self.min_area))
+            self.conclusion += "<li>{} is in Area of Interest {}.</li>".format(str(self.value), str(self.min_area))
 
         del self.value
         del self.results
