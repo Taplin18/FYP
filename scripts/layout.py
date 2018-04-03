@@ -181,6 +181,18 @@ class Layout:
 
         return self.incorrect
 
+    def edit_details(self, hash_fam):
+        """
+        List the hash functions used in the SBF.
+        :param hash_fam: the hash functions currently used.
+        :return: the HTML to list the hash functions selected.
+        """
+        self.hash_family = hash_fam
+        self.hash_functions = ""
+        for hf in self.hash_family:
+            self.hash_functions += "<li>{}</li>".format(str(hf.upper()))
+        return self.hash_functions
+
     def _tooltip(self, index, results):
         """
         Get the hash function to display in the tooltip.

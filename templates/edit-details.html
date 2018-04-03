@@ -20,7 +20,7 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
         <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
 
-        <title>About</title>
+        <title>Edit Details</title>
     </head>
     <body>
         <ul id="dropdown1" class="dropdown-content">
@@ -95,70 +95,88 @@
         <div class="container">
 
             <div class="row">
-                <div class="col s12 m12 l12">
-                    <ul class="collection with-header">
-                        <li class="collection-header"><h5>What is a Spatial Bloom Filter?</h5></li>
-                        <li class="collection-item">
-                            Location privacy is a growing issue in cybersecurity.
-                        </li>
-                        <li class="collection-item">
-                            The spatial bloom filter is one of the many privacy-preserving protocols
-                            aimed at mitigating this threat to personal privacy.
-                        </li>
-                        <li class="collection-item">
-                            The spatial bloom filter is a data structure based on bloom filters, designed
-                            to store location information.
-                        </li>
-                        <li class="collection-item">
-                            The protocol keeps the user's exact location hidden but allows the provider
-                            of the service to learn when the user is close to specific points of
-                            interest or inside predefined areas.
-                        </li>
-                        <li class="collection-item">
-                            At the same time, the points and areas of interest remain oblivious
-                            to the user.
-                        </li>
+                <div class="col s12 m12 l6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title">Default Hash Family</span>
+                                <div class="divider"></div>
+                                <div class="section">
+                                    <p>
+                                        The default hash functions used in the spacial bloom filter are:
+                                        <ol>
+                                            <li>MD5</li>
+                                            <li>SHA256</li>
+                                            <li>SHA1</li>
+                                        </ol>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    </ul>
+                <div class="col s12 m12 l6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title">Current Hash Family</span>
+                                <div class="divider"></div>
+                                <div class="section">
+                                    <p>
+                                        The hash functions that are currently being used:
+                                        <ol>
+                                            {{ hash_family }}
+                                        </ol>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <ul class="collection with-header">
-                        <li class="collection-header"><h5>The Cork dataset</h5></li>
-                        <li class="collection-item">
-                            There are four Areas of Interest marked on the map of Cork and each area
-                            has a set of coordinates associated with it.
-                        </li>
-                        <li class="collection-item">
-                            There is a geospatial grid placed on the map which allows the coordinates
-                            that are extracted to be accurate to 0.0001 of a degree.
-                        </li>
-                        <li class="collection-item">
-                            The coordinates for are taken from the bottom-left of each cell.
-                        </li>
-                        <li class="collection-item">
-                            When the dataset is imported, it is the Area od Interest number that is
-                            placed in the SBF.
-                        </li>
-                        <li class="collection-item">
-                            Each coordinate is placed in the SBF three times as there is three
-                            hash functions.
-                        </li>
-                        <li class="collection-item">
-                            As there is many values placed into the SBF, the Area of Interest
-                            number can be overwritten by the new values that are being inserted.
-                        </li>
-                        <li class="collection-item">
-                            Check the
-                            <a href="{{ url_for('values') }}">Test Data</a>
-                            tab for coordinates that are now incorrect as their Area of Interest value has
-                            been overwritten.
-                        </li>
-                    </ul>
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title">Edit Hash Family</span>
+                                <div class="divider"></div>
+                                <div class="section">
+                                    <ul>
+                                        <li>
+                                            <input type="checkbox" name="hf1" id="hf1">
+                                            <label for="hf1">MD4</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" checked="checked" name="hf2" id="hf2">
+                                            <label for="hf2">MD5</label>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-action">
+                                    <div class="col s12 m6 l6" style="padding-top: 10px;">
+                                        <form action="#" method="post">
+                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit"  style="padding-bottom: 10px;">
+                                                Update<i class="material-icons right">update</i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col s12 m6 l6" style="padding-top: 10px;">
+                                        <form action="#" method="post">
+                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit">
+                                                Reset<i class="material-icons right">refresh</i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
 
         </div>
 

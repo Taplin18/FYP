@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'any random string'
 
 CELL_NUM = 10
-HASH_FAM = ['md5', 'SHA256', 'sha1']
+HASH_FAM = ['md5', 'sha256', 'sha1']
 
 format_layout = Layout(CELL_NUM)
 my_sbf = sbf(CELL_NUM, HASH_FAM)
@@ -99,6 +99,13 @@ def about():
 def values():
     incorrect_values = session.get('incorrect_values')
     return render_template('values.html', incorrect_values=Markup(incorrect_values))
+
+
+@app.route('/edit_details')
+def edit_details():
+    hash_family = format_layout.edit_details(HASH_FAM)
+    session['hash_family'] = hash_family
+    return render_template('edit-details.html', hash_family=Markup(hash_family))
 
 
 @app.route('/back')

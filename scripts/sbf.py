@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 
 
-# noinspection PyAttributeOutsideInit
 class sbf:
 
     # The maximum string length in bytes of each element given as input to be mapped in the SBF

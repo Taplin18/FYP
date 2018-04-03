@@ -47,7 +47,7 @@
                         </a>
                     </li>
                     <li class="active">
-                        <a href="#">
+                        <a href="{{ url_for('edit_details') }}">
                             Edit Details<i class="material-icons right">edit</i>
                         </a>
                     </li>
@@ -78,7 +78,11 @@
                         </ul>
                         </div>
                     </li>
-                    <li><a href="#">Edit Details<i class="material-icons right">edit</i></a></li>
+                    <li>
+                        <a href="{{ url_for('edit_details') }}">
+                            Edit Details<i class="material-icons right">edit</i>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
