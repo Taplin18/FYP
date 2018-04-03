@@ -15,7 +15,7 @@ app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
 @app.route('/index')
 @app.route('/')
 def index():
-    # app.my_sbf.clear_filter()
+    app.my_sbf.clear_filter()
     app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
     sbf_table = format_layout.load_table(app.my_sbf.get_filter())
     sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
