@@ -95,15 +95,55 @@
         <div class="container">
 
             <div class="row">
+                <div class="col s12 m12 l12">
+                    <ul class="collection with-header">
+                        <li class="collection-header"><h5>Current Hash Family</h5></li>
+                        <li class="collection-item">
+                            The hash functions currently being used in the filter are:
+                            <ol>
+                                {{ hash_family }}
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col s12 m12 l6">
                     <div class="card horizontal">
                         <div class="card-stacked">
                             <div class="card-content">
-                                <span class="card-title">Default Hash Family</span>
+                                <span class="card-title">Hash Family Options</span>
+                                <div class="divider"></div>
+                                <form action="#" method="post">
+                                    <div class="section">
+                                        <ul>
+                                            {{ hf_options }}
+                                        </ul>
+                                    </div>
+                                    <div class="card-action">
+                                        <div class="col s12 m6 l6" style="padding-top: 10px;">
+                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit"  style="padding-bottom: 10px;">
+                                                Update<i class="material-icons right">update</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m12 l6">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <span class="card-title">Reset Hash Family</span>
                                 <div class="divider"></div>
                                 <div class="section">
                                     <p>
-                                        The default hash functions used in the spacial bloom filter are:
+                                        Reset the hash family to the default hash family.<br>
+                                        The default hash family is:
                                         <ol>
                                             <li>MD5</li>
                                             <li>SHA256</li>
@@ -111,60 +151,9 @@
                                         </ol>
                                     </p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col s12 m12 l6">
-                    <div class="card horizontal">
-                        <div class="card-stacked">
-                            <div class="card-content">
-                                <span class="card-title">Current Hash Family</span>
-                                <div class="divider"></div>
-                                <div class="section">
-                                    <p>
-                                        The hash functions that are currently being used:
-                                        <ol>
-                                            {{ hash_family }}
-                                        </ol>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col s12 m12 l12">
-                    <div class="card horizontal">
-                        <div class="card-stacked">
-                            <div class="card-content">
-                                <span class="card-title">Edit Hash Family</span>
-                                <div class="divider"></div>
-                                <div class="section">
-                                    <ul>
-                                        <li>
-                                            <input type="checkbox" name="hf1" id="hf1">
-                                            <label for="hf1">MD4</label>
-                                        </li>
-                                        <li>
-                                            <input type="checkbox" checked="checked" name="hf2" id="hf2">
-                                            <label for="hf2">MD5</label>
-                                        </li>
-                                    </ul>
-                                </div>
                                 <div class="card-action">
                                     <div class="col s12 m6 l6" style="padding-top: 10px;">
-                                        <form action="#" method="post">
-                                            <button class="btn waves-effect waves-light blue lighten-1" type="submit"  style="padding-bottom: 10px;">
-                                                Update<i class="material-icons right">update</i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="col s12 m6 l6" style="padding-top: 10px;">
-                                        <form action="#" method="post">
+                                        <form action="{{ url_for('reset_hash_family') }}" method="post">
                                             <button class="btn waves-effect waves-light blue lighten-1" type="submit">
                                                 Reset<i class="material-icons right">refresh</i>
                                             </button>
@@ -175,6 +164,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
 

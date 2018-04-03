@@ -22,7 +22,7 @@ class sbf:
     # The maximum number of allowed digests
     MAX_HASH_NUMBER = 10
     # The available hash families
-    HASH_FAMILIES = ['md4', 'md5', 'sha', 'sha1', 'sha256']
+    HASH_FAMILIES = ['md4', 'md5', 'sha', 'sha1', 'sha256', 'sha3_256']
     # Path to hash salt file
 
     def __init__(self, bit_mapping, hash_family, num_hashes=1, num_areas=4):
@@ -378,6 +378,13 @@ class sbf:
         """
         return self.filter
 
+    def get_hash_family(self):
+        """
+        Returns the hash family.
+        :return: list of hash family.
+        """
+        return self.hash_family
+
     def get_stats(self):
         """
         Returns a dictionary of statistics of the SBF.
@@ -429,6 +436,14 @@ class sbf:
         del self.areas
 
         return incorrect_areas
+
+    def allowed_hashes(self):
+        """
+        Return a list of allowed hash functions.
+        :return: list of hash functions.
+        """
+        # return self.HASH_FAMILIES.remove('sha')
+        return self.HASH_FAMILIES
 
     def _bits_of(self, byte, nbits):
         """

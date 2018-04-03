@@ -193,6 +193,30 @@ class Layout:
             self.hash_functions += "<li>{}</li>".format(str(hf.upper()))
         return self.hash_functions
 
+    def hash_family_options(self, allowed_hashes):
+        """
+        <li>
+            <input type="checkbox" name="md4" id="md4">
+            <label for="md4">MD4</label>
+        </li>
+        :param allowed_hashes: a list of allowed hash functions.
+        :return: HTML to display the hash functions as checkboxes.
+        """
+        self.allowed_hashes = allowed_hashes
+        self.checkboxes = ""
+        for hf in self.allowed_hashes:
+            if hf in self.hash_family:
+                self.checkboxes += "<li><input type=\"checkbox\" checked=\"checked\" name=\"{} \"id=\"{}\">" \
+                                   "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
+                                                                              str(hf.upper()))
+            else:
+                self.checkboxes += "<li><input type=\"checkbox\" name=\"{} \"id=\"{}\">" \
+                                   "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
+                                                                              str(hf.upper()))
+
+        del self.allowed_hashes
+        return self.checkboxes
+
     def _tooltip(self, index, results):
         """
         Get the hash function to display in the tooltip.
