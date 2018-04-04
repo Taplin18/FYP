@@ -79,12 +79,12 @@ class Layout:
             if (i % 64 == 0) and (i != 0):
                 self.table += "</tr><tr>"
             if i in self.indexes:
-                self.table += "<td class=\"tooltip\" id=\"{}\" style=\"background-color: red\">" \
+                self.table += "<td class=\"tooltip\" id={} style=\"background-color: red\">" \
                               "{}" \
                               "<span class=\"tooltiptext\">{}</span>" \
                               "</td>".format(str(i), str(self.sbf_table[i]), str(self._tooltip(i, self.results)))
             else:
-                self.table += "<td id=\"{}\" >{}</td>".format(str(i),
+                self.table += "<td id={}>{}</td>".format(str(i),
                                                               str(self.sbf_table[i]))
         self.table += "</tr>"
 
@@ -195,10 +195,7 @@ class Layout:
 
     def hash_family_options(self, allowed_hashes):
         """
-        <li>
-            <input type="checkbox" name="md4" id="md4">
-            <label for="md4">MD4</label>
-        </li>
+        Checkboxes of the hash functions that be used for the hash family.
         :param allowed_hashes: a list of allowed hash functions.
         :return: HTML to display the hash functions as checkboxes.
         """
@@ -207,13 +204,13 @@ class Layout:
         for hf in self.allowed_hashes:
             if hf in self.hash_family:
                 self.checkboxes += \
-                    "<li><input type=\"checkbox\" checked=\"checked\" name=\"{} \"id=\"{}\" class=\"hf\">" \
-                    "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
-                                                               str(hf.upper()))
+                    "<li><input type=\"checkbox\" checked=\"checked\" id={} name=\"hf\" class=\"options\" value={}>" \
+                    "<label for={}>{}</label></li>".format(str(hf), str(hf), str(hf),
+                                                           str(hf.upper()))
             else:
-                self.checkboxes += "<li><input type=\"checkbox\" name=\"{} \"id=\"{}\" class=\"hf\">" \
-                                   "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
-                                                                              str(hf.upper()))
+                self.checkboxes += "<li><input type=\"checkbox\" id={} name=\"hf\" class=\"options\" value={}>" \
+                                   "<label for={}>{}</label></li>".format(str(hf), str(hf), str(hf),
+                                                                          str(hf.upper()))
 
         del self.allowed_hashes
         return self.checkboxes

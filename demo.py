@@ -16,33 +16,26 @@ app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
 @app.route('/')
 def index():
     app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
-    sbf_table = format_layout.load_table(app.my_sbf.get_filter())
-    sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
-    check_result_table, check_result_conclusion = format_layout.no_check_result()
 
-    session['sbf_table'] = sbf_table
-    session['sbf_stats'] = sbf_stats
-    session['check_result_table'] = check_result_table
-    session['check_result_conclusion'] = check_result_conclusion
-    session['incorrect_values'] = '<tr><td></td><td></td><td></td><td></td></tr>'
+    _set_session()
 
-    return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result_table=Markup(check_result_table),
-                           check_result_conclusion=Markup(check_result_conclusion))
+    return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
+                           sbf_stats=Markup(session.get('sbf_stats')),
+                           check_result_table=Markup(session.get('check_result_table')),
+                           check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
 
 @app.route('/import_sbf', methods=['POST'])
 def import_sbf():
     app.my_sbf.insert_from_file()
     app.my_sbf.update_stats()
-    sbf_table = format_layout.load_table(app.my_sbf.get_filter())
-    sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
 
-    session['sbf_table'] = sbf_table
-    session['sbf_stats'] = sbf_stats
+    session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
+    session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
     session['incorrect_values'] = format_layout.incorrect_areas(app.my_sbf.incorrect_values())
 
-    return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
+    return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
+                           sbf_stats=Markup(session.get('sbf_stats')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -65,14 +58,43 @@ def check_sbf():
 @app.route('/clear_sbf', methods=['POST'])
 def clear_sbf():
     app.my_sbf.clear_filter()
-    sbf_table = format_layout.load_table(app.my_sbf.get_filter())
-    sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
+    _set_session()
 
-    session['sbf_table'] = sbf_table
-    session['sbf_stats'] = sbf_stats
-    session['incorrect_values'] = '<tr><td></td><td></td><td></td><td></td></tr>'
+    return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
+                           sbf_stats=Markup(session.get('sbf_stats')),
+                           check_result_table=Markup(session.get('check_result_table')),
+                           check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
-    return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
+
+@app.route('/reset_hash_family', methods=['POST'])
+def reset_hash_family():
+    if request.method == 'POST':
+        default_hash_family = ['md5', 'sha256', 'sha1']
+        hash_family, hf_options = _hash_functions(default_hash_family)
+
+        app.my_sbf.clear_filter()
+        app.my_sbf = sbf(CELL_NUM, default_hash_family)
+        _set_session()
+
+        return render_template('edit-details.html', hash_family=Markup(hash_family), hf_options=Markup(hf_options))
+
+
+@app.route('/update_hash_family', methods=['POST'])
+def update_hash_family():
+    if request.method == 'POST':
+        hash_family, hf_options = _hash_functions(request.form.getlist('hf'))
+
+        app.my_sbf.clear_filter()
+        app.my_sbf = sbf(CELL_NUM, request.form.getlist('hf'))
+        _set_session()
+
+        return render_template('edit-details.html', hash_family=Markup(hash_family), hf_options=Markup(hf_options))
+
+
+@app.route('/back')
+def back():
+    return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
+                           sbf_stats=Markup(session.get('sbf_stats')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -90,8 +112,7 @@ def about():
 
 @app.route('/values')
 def values():
-    incorrect_values = session.get('incorrect_values')
-    return render_template('values.html', incorrect_values=Markup(incorrect_values))
+    return render_template('values.html', incorrect_values=Markup(session.get('incorrect_values')))
 
 
 @app.route('/edit_details')
@@ -100,33 +121,15 @@ def edit_details():
     return render_template('edit-details.html', hash_family=Markup(hash_family), hf_options=Markup(hf_options))
 
 
-@app.route('/reset_hash_family', methods=['POST'])
-def reset_hash_family():
-    if request.method == 'POST':
-        default_hash_family = ['md5', 'sha256', 'sha1']
-        hash_family, hf_options = _hash_functions(default_hash_family)
+def _set_session():
+    session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
+    session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
 
-        app.my_sbf.clear_filter()
-        app.my_sbf = sbf(CELL_NUM, default_hash_family)
-        sbf_table = format_layout.load_table(app.my_sbf.get_filter())
-        sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
-        check_result_table, check_result_conclusion = format_layout.no_check_result()
+    check_result_table, check_result_conclusion = format_layout.no_check_result()
 
-        session['sbf_table'] = sbf_table
-        session['sbf_stats'] = sbf_stats
-        session['check_result_table'] = check_result_table
-        session['check_result_conclusion'] = check_result_conclusion
-        session['incorrect_values'] = '<tr><td></td><td></td><td></td><td></td></tr>'
-
-        return render_template('edit-details.html', hash_family=Markup(hash_family), hf_options=Markup(hf_options))
-
-
-@app.route('/back')
-def back():
-    return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
-                           sbf_stats=Markup(session.get('sbf_stats')),
-                           check_result_table=Markup(session.get('check_result_table')),
-                           check_result_conclusion=Markup(session.get('check_result_conclusion')))
+    session['check_result_table'] = check_result_table
+    session['check_result_conclusion'] = check_result_conclusion
+    session['incorrect_values'] = '<tr><td></td><td></td><td></td><td></td></tr>'
 
 
 def _hash_functions(hash_fam):
