@@ -206,11 +206,12 @@ class Layout:
         self.checkboxes = ""
         for hf in self.allowed_hashes:
             if hf in self.hash_family:
-                self.checkboxes += "<li><input type=\"checkbox\" checked=\"checked\" name=\"{} \"id=\"{}\">" \
-                                   "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
-                                                                              str(hf.upper()))
+                self.checkboxes += \
+                    "<li><input type=\"checkbox\" checked=\"checked\" name=\"{} \"id=\"{}\" class=\"hf\">" \
+                    "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
+                                                               str(hf.upper()))
             else:
-                self.checkboxes += "<li><input type=\"checkbox\" name=\"{} \"id=\"{}\">" \
+                self.checkboxes += "<li><input type=\"checkbox\" name=\"{} \"id=\"{}\" class=\"hf\">" \
                                    "<label for=\"{}\">{}</label></li>".format(str(hf), str(hf), str(hf),
                                                                               str(hf.upper()))
 

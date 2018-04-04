@@ -3,7 +3,7 @@ from scripts.layout import Layout
 from scripts.sbf import sbf
 app = Flask(__name__)
 
-app.secret_key = 'any random string'
+app.secret_key = 'spacial bloom filter'
 
 CELL_NUM = 10
 HASH_FAMILY = ['md5', 'sha256', 'sha1']
@@ -15,7 +15,6 @@ app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
 @app.route('/index')
 @app.route('/')
 def index():
-    app.my_sbf.clear_filter()
     app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
     sbf_table = format_layout.load_table(app.my_sbf.get_filter())
     sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
@@ -34,9 +33,6 @@ def index():
 
 @app.route('/import_sbf', methods=['POST'])
 def import_sbf():
-    check_result_table = session.get('check_result_table')
-    check_result_conclusion = session.get('check_result_conclusion')
-
     app.my_sbf.insert_from_file()
     app.my_sbf.update_stats()
     sbf_table = format_layout.load_table(app.my_sbf.get_filter())
@@ -47,8 +43,8 @@ def import_sbf():
     session['incorrect_values'] = format_layout.incorrect_areas(app.my_sbf.incorrect_values())
 
     return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result_table=Markup(check_result_table),
-                           check_result_conclusion=Markup(check_result_conclusion))
+                           check_result_table=Markup(session.get('check_result_table')),
+                           check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
 
 @app.route('/check_sbf', methods=['POST'])
@@ -57,21 +53,17 @@ def check_sbf():
         result = request.form
         value = result['sbf_check']
 
-        sbf_stats = session.get('sbf_stats')
         check_result_table, check_result_conclusion = format_layout.load_check_result(value, app.my_sbf.check(value),
                                                                                       app.my_sbf.incorrect_values())
         sbf_table = format_layout.highlight_table(app.my_sbf.get_filter(), app.my_sbf.check(value))
 
-        return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
+        return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(session.get('sbf_stats')),
                                check_result_table=Markup(check_result_table),
                                check_result_conclusion=Markup(check_result_conclusion))
 
 
 @app.route('/clear_sbf', methods=['POST'])
 def clear_sbf():
-    check_result_table = session.get('check_result_table')
-    check_result_conclusion = session.get('check_result_conclusion')
-
     app.my_sbf.clear_filter()
     sbf_table = format_layout.load_table(app.my_sbf.get_filter())
     sbf_stats = format_layout.load_stats(app.my_sbf.get_stats())
@@ -81,8 +73,8 @@ def clear_sbf():
     session['incorrect_values'] = '<tr><td></td><td></td><td></td><td></td></tr>'
 
     return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result_table=Markup(check_result_table),
-                           check_result_conclusion=Markup(check_result_conclusion))
+                           check_result_table=Markup(session.get('check_result_table')),
+                           check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
 
 @app.route('/cork_csv')
@@ -131,14 +123,10 @@ def reset_hash_family():
 
 @app.route('/back')
 def back():
-    sbf_table = session.get('sbf_table')
-    sbf_stats = session.get('sbf_stats')
-    check_result_table = session.get('check_result_table')
-    check_result_conclusion = session.get('check_result_conclusion')
-
-    return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(sbf_stats),
-                           check_result_table=Markup(check_result_table),
-                           check_result_conclusion=Markup(check_result_conclusion))
+    return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
+                           sbf_stats=Markup(session.get('sbf_stats')),
+                           check_result_table=Markup(session.get('check_result_table')),
+                           check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
 
 def _hash_functions(hash_fam):
@@ -148,10 +136,6 @@ def _hash_functions(hash_fam):
         allowed_hash_functions.remove('sha')
     hfo = format_layout.hash_family_options(allowed_hash_functions)
     return hf, hfo
-
-#
-# def _change_hash_family(hash_fam):
-#     app.my_sbf(CELL_NUM, hash_fam)
 
 
 if __name__ == '__main__':
