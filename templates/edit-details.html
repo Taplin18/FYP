@@ -108,6 +108,19 @@
                 </div>
             </div>
 
+            <div class="row" id="warning" style="display: none">
+                <div class="col s12 m12 l12">
+                    <div class="card red">
+                        <div class="card-content white-text">
+                            <span class="card-title">Warning</span>
+                            <p>
+                               Three hash family options must be selected!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col s12 m12 l6">
                     <div class="card horizontal">
@@ -171,6 +184,17 @@
 
 
         </div>
+
+        <script>
+            $(function() {
+                 $('#update_hf').click(function(e){
+                   if ($('.hf:checked').length !== 3){
+                       document.getElementById('warning').style.display = 'block';
+                       e.preventDefault();
+                   }
+                });
+            });
+        </script>
 
     </body>
 </html>
