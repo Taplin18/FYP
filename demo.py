@@ -5,17 +5,16 @@ app = Flask(__name__)
 
 app.secret_key = 'spacial bloom filter'
 
-CELL_NUM = 10
 HASH_FAMILY = ['md5', 'sha256', 'sha1']
 
-format_layout = Layout(CELL_NUM)
-app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
+format_layout = Layout(10)
+app.my_sbf = sbf(HASH_FAMILY)
 
 
 @app.route('/index')
 @app.route('/')
 def index():
-    app.my_sbf = sbf(CELL_NUM, HASH_FAMILY)
+    app.my_sbf = sbf(HASH_FAMILY)
 
     _set_session()
 
@@ -73,7 +72,7 @@ def reset_hash_family():
         hash_family, hf_options = _hash_functions(default_hash_family)
 
         app.my_sbf.clear_filter()
-        app.my_sbf = sbf(CELL_NUM, default_hash_family)
+        app.my_sbf = sbf(default_hash_family)
         _set_session()
 
         return render_template('edit-details.html', hash_family=Markup(hash_family), hf_options=Markup(hf_options))
@@ -85,7 +84,7 @@ def update_hash_family():
         hash_family, hf_options = _hash_functions(request.form.getlist('hf'))
 
         app.my_sbf.clear_filter()
-        app.my_sbf = sbf(CELL_NUM, request.form.getlist('hf'))
+        app.my_sbf = sbf(request.form.getlist('hf'))
         _set_session()
 
         return render_template('edit-details.html', hash_family=Markup(hash_family), hf_options=Markup(hf_options))

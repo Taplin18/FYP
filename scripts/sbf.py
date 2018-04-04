@@ -25,7 +25,7 @@ class sbf:
     HASH_FAMILIES = ['md4', 'md5', 'sha', 'sha1', 'sha256', 'sha3_256']
     # Path to hash salt file
 
-    def __init__(self, bit_mapping, hash_family, num_hashes=1, num_areas=4):
+    def __init__(self, hash_family, bit_mapping=10, num_hashes=1, num_areas=4):
         """
         Initialises the SBF class.
         :param bit_mapping: filter composed of 2^bit_mapping cells.
