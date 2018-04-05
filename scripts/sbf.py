@@ -1,10 +1,14 @@
 import base64
 import csv
+import sys
 import hashlib
 from sys import byteorder
 from pathlib import Path
 
 import numpy as np
+
+if sys.version_info < (3, 6):
+    import sha3
 
 
 class sbf:
@@ -22,7 +26,7 @@ class sbf:
     # The maximum number of allowed digests
     MAX_HASH_NUMBER = 10
     # The available hash families
-    HASH_FAMILIES = ['blake2b', 'blake2s', 'md4', 'md5', 'sha1', 'sha256', 'sha512', 'sha3_256', 'sha3_512']
+    HASH_FAMILIES = ['md4', 'md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_256', 'sha3_512']
 
     def __init__(self, hash_family, bit_mapping=10, num_hashes=1, num_areas=4):
         """
@@ -183,10 +187,10 @@ class sbf:
                                              for (a, b) in zip(self.element, self.hash_salts[self.j])]), 'latin-1')
 
                 # Initializes the hash function according to the hash family
-                if self.i == 'md5':
-                    self.m = hashlib.md5()
-                elif self.i == 'sha1':
-                    self.m = hashlib.sha1()
+                if self.i == 'sha3_256':
+                    self.m = hashlib.sha3_256()
+                elif self.i == 'sha3_512':
+                    self.m = hashlib.sha3_512()
                 else:
                     self.m = hashlib.new(self.i)
 
@@ -298,10 +302,10 @@ class sbf:
                                              for (a, b) in zip(self.element, self.hash_salts[self.j])]), 'latin-1')
 
                 # Initializes the hash function according to the hash family
-                if self.i == 'md5':
-                    self.m = hashlib.md5()
-                elif self.i in ['sha', 'sha1']:
-                    self.m = hashlib.sha1()
+                if self.i == 'sha3_256':
+                    self.m = hashlib.sha3_256()
+                elif self.i == 'sha3_512':
+                    self.m = hashlib.sha3_512()
                 else:
                     self.m = hashlib.new(self.i)
 
