@@ -29,19 +29,18 @@ class Layout:
         :return: a string of HTML to display the stat results.
         """
         self.sbf_stats = sbf_stats
-        self.hash_family = ast.literal_eval(self.sbf_stats["Hash family"])
+        self.hash_family = ast.literal_eval(self.sbf_stats["Hash Family"])
         k = list(self.sbf_stats.keys())
         self.stats = ""
         for i in range(0, len(k)):
             if k[i] == "Hash family":
-                self.hf = ', '.join(map(str, self.hash_family))
+                hf = ', '.join(map(str, self.hash_family))
                 self.stats += "<li class=\"collection-item\"><b>{}:</b> {}</li>".format(str(k[i]),
-                                                                                        str(self.hf.upper()))
+                                                                                        str(hf.upper()))
             else:
                 self.stats += "<li class=\"collection-item\"><b>{}:</b> {}</li>".format(str(k[i]),
                                                                                         str(self.sbf_stats[k[i]]))
 
-        del self.hf
         del self.sbf_stats
         return self.stats
 
@@ -85,7 +84,7 @@ class Layout:
                               "</td>".format(str(i), str(self.sbf_table[i]), str(self._tooltip(i, self.results)))
             else:
                 self.table += "<td id={}>{}</td>".format(str(i),
-                                                              str(self.sbf_table[i]))
+                                                         str(self.sbf_table[i]))
         self.table += "</tr>"
 
         del self.sbf_table
@@ -160,7 +159,7 @@ class Layout:
 
     def incorrect_areas(self, incorrect_vals):
         """
-        Return the information about the coordinates with the wrong area.
+        Return the information about the coordinates with the wrong area of interest.
         :param incorrect_vals: a dictionary with the coordinate as the key and list [real_area, [returned areas]] as
                                the value.
         :return: HTML of table containing the incorrect values.
@@ -180,6 +179,25 @@ class Layout:
         del self.a
 
         return self.incorrect
+
+    def false_positive_area(self, fp_values):
+        """
+        Return the information about the coordinates not in the SBF but return an area of interest.
+        :param fp_values: a dictionary with the coordinate as the key and a list of the areas of interest it returned.
+        :return: HTML table to display the false positive values.
+        """
+        self.fp_values = fp_values
+        self.coordinates = list(self.fp_values.keys())
+        self.fp = ""
+        for i in self.coordinates:
+            self.a = self.fp_values[i]
+            self.fp += "<tr><td>{}</td><td>{}</td>" \
+                       "<td>{}</td></tr>".format(i, min(int(m) for m in self.a), self.a)
+        del self.fp_values
+        del self.coordinates
+        del self.a
+
+        return self.fp
 
     def edit_details(self, hash_fam):
         """
