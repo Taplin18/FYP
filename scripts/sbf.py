@@ -4,6 +4,7 @@ import sys
 import hashlib
 from sys import byteorder
 from pathlib import Path
+from random import randint
 
 import numpy as np
 
@@ -88,9 +89,13 @@ class sbf:
         self.area_self_collisions = [0] * (self.num_areas + 1)
         # list of file from which elements have been inserted
         self.insert_file_list = []
+        # all the coordinates in the csv
+        self.all_coors = []
+        self._coors()
+        # initial stats of filter
         self.stats = {
-            "Hash family": str(self.hash_family),
-            "Number of cells": str(self.num_cells),
+            "Hash Family": str(self.hash_family),
+            "Number of Cells": str(self.num_cells),
         }
         del self.i
 
@@ -228,6 +233,7 @@ class sbf:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
             for self.row in self.dataset_reader:
                 self._insert(self.row[1], int(self.row[0]))
+                self.all_coors.remove(self.row[1])
 
         self.insert_file_list.append(self.dataset_path)
 
@@ -337,13 +343,13 @@ class sbf:
         Update the stats about the SBF filter.
         """
         self.precision = precision
-        self.stats["Filter sparsity"] = str('{:.{prec}f}'.format(round(self._filter_sparsity(), self.precision),
+        self.stats["Filter Sparsity"] = str('{:.{prec}f}'.format(round(self._filter_sparsity(), self.precision),
                                                                  prec=self.precision))
-        self.stats["Filter false positive probability"] = str('{:.{prec}f}'.format(round(self._filter_fpp(),
+        self.stats["Filter False Positive Probability"] = str('{:.{prec}f}'.format(round(self._filter_fpp(),
                                                                                          self.precision),
                                                                                    prec=self.precision))
-        self.stats['Number of mapped elements'] = str(self.members)
-        self.stats['Number of hash collisions'] = str(self.collisions)
+        self.stats['Number of Mapped Elements'] = str(self.members)
+        self.stats['Number of Hash Collisions'] = str(self.collisions)
 
     def _filter_sparsity(self):
         """
@@ -407,8 +413,8 @@ class sbf:
         self.area_self_collisions = [0] * (self.num_areas + 1)
         self.insert_file_list = []
         self.stats = {
-            "Hash family": str(self.hash_family),
-            "Number of cells": str(self.num_cells),
+            "Hash Family": str(self.hash_family),
+            "Number of Cells": str(self.num_cells),
         }
 
     def incorrect_values(self):
@@ -448,6 +454,25 @@ class sbf:
         # return self.HASH_FAMILIES.remove('sha')
         return self.HASH_FAMILIES
 
+    def find_false_positives(self):
+        """
+        Find the coordinates are not in the SBF but falsely return an Area of Interest.
+        :return: a dictionary of 10 false positive coordinates.( key: coordinate, value:[area of interests])
+        """
+        self.fp_coor = {}
+        indexes = []
+        while len(indexes) != 100:
+            indexes.append(randint(0, len(self.all_coors)))
+        for i in indexes:
+            if len(self.fp_coor) == 10:
+                return self.fp_coor
+            aoi = []
+            self.check_result = self.check(self.all_coors[i])
+            for hf in self.hash_family:
+                aoi.append(self.check_result[hf][1])
+            if min(int(m) for m in aoi) != 0:
+                self.fp_coor[self.all_coors[i]] = aoi
+
     def _bits_of(self, byte, nbits):
         """
         Return the number of bits need for mapping the hash digest.
@@ -474,6 +499,12 @@ class sbf:
         del self.nbits
         del self.bytes_needed
         return self.x
+
+    def _coors(self):
+        long1, long2, lat1, lat2 = 8945, 9020, 4694, 4844
+        for x in range(long1, long2 + 1):
+            for y in range(lat1, lat2 + 2):
+                self.all_coors.append("51.{}#-8.{}".format(x, y))
 
     @staticmethod
     def _get_salt_path():

@@ -31,6 +31,7 @@ def import_sbf():
 
     session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
     session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
+    session['fp_values'] = format_layout.false_positive_area(app.my_sbf.find_false_positives())
     session['incorrect_values'] = format_layout.incorrect_areas(app.my_sbf.incorrect_values())
 
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
@@ -111,7 +112,8 @@ def about():
 
 @app.route('/values')
 def values():
-    return render_template('values.html', incorrect_values=Markup(session.get('incorrect_values')))
+    return render_template('values.html', incorrect_values=Markup(session.get('incorrect_values')),
+                           fp_values=Markup(session.get('fp_values')))
 
 
 @app.route('/edit_details')
@@ -129,6 +131,7 @@ def _set_session():
     session['check_result_table'] = check_result_table
     session['check_result_conclusion'] = check_result_conclusion
     session['incorrect_values'] = '<tr><td></td><td></td><td></td><td></td></tr>'
+    session['fp_values'] = '<tr><td></td><td></td><td></td></tr>'
 
 
 def _hash_functions(hash_fam):

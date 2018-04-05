@@ -110,14 +110,30 @@
 
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <h5>Coordinates that give incorrect Area of Interest value</h5>
+                    <h5>Coordinates not in SBF but return an Area of Interest</h5>
                     <table class="centered striped">
                         <thead>
                             <tr>
                                 <th>Coordinate</th>
-                                <th>Actual Area</th>
-                                <th>Lowest Area in SBF</th>
-                                <th>Areas in SBF</th>
+                                <th>AoI Returned</th>
+                                <th>AoI's in SBF</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{ fp_values }}</tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <h5>Coordinates that return incorrect Area of Interest value</h5>
+                    <table class="centered striped">
+                        <thead>
+                            <tr>
+                                <th>Coordinate</th>
+                                <th>Actual AoI</th>
+                                <th>Lowest AoI in SBF</th>
+                                <th>AoI's in SBF</th>
                             </tr>
                         </thead>
                         <tbody>{{ incorrect_values }}</tbody>
