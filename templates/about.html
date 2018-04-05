@@ -193,8 +193,20 @@
                     <ul class="collection with-header">
                         <li class="collection-header"><h5>Check Results</h5></li>
                         <li class="collection-item">
-                            There are four Areas of Interest marked on the map of Cork and each area
-                            has a set of coordinates associated with it.
+                            When querying the spacial bloom filter, the result is which Area of Interest it belongs to.
+                        </li>
+                        <li class="collection-item">
+                            There will be three Area of Interest results as the coordinate was placed in the SBF three
+                            times as there is three hash functions in the hash family.
+                        </li>
+                        <li class="collection-item">
+                            The lowest Area of Interest value is the answer as cells can be overwritten.
+                        </li>
+                        <li class="collection-item">
+                            If any of the three results are zero, then the value queried is not in the SBF.
+                        </li>
+                        <li class="collection-item">
+                            As cells can be overwritten, it is possible that the wrong Area of Interest is returned.
                         </li>
                     </ul>
                 </div>

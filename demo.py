@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 app.secret_key = 'spacial bloom filter'
 
-HASH_FAMILY = ['md5', 'sha256', 'sha1']
+HASH_FAMILY = ['md5', 'sha1', 'sha256']
 
 format_layout = Layout(10)
 app.my_sbf = sbf(HASH_FAMILY)
@@ -134,8 +134,6 @@ def _set_session():
 def _hash_functions(hash_fam):
     hf = format_layout.edit_details(hash_fam)
     allowed_hash_functions = app.my_sbf.allowed_hashes()
-    if 'sha' in allowed_hash_functions:
-        allowed_hash_functions.remove('sha')
     hfo = format_layout.hash_family_options(allowed_hash_functions)
     return hf, hfo
 
