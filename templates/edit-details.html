@@ -99,7 +99,7 @@
                     <ul class="collection with-header">
                         <li class="collection-header"><h5>Current Hash Family</h5></li>
                         <li class="collection-item">
-                            The hash functions currently being used in the filter are:
+                            The three hash functions currently being used in the filter are:
                             <ol>
                                 {{ hash_family }}
                             </ol>
@@ -130,6 +130,7 @@
                                 <div class="divider"></div>
                                 <form action="{{ url_for('update_hash_family') }}" method="post" id="upd_opts">
                                     <div class="section">
+                                        <p>Select three hash functions:</p>
                                         <ul>
                                             {{ hf_options }}
                                         </ul>
@@ -160,8 +161,8 @@
                                         The default hash family is:
                                         <ol>
                                             <li>MD5</li>
-                                            <li>SHA256</li>
                                             <li>SHA1</li>
+                                            <li>SHA256</li>
                                         </ol>
                                     </p>
                                 </div>

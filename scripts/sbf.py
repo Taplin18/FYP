@@ -22,10 +22,9 @@ class sbf:
     # The maximum number of allowed digests
     MAX_HASH_NUMBER = 10
     # The available hash families
-    HASH_FAMILIES = ['md4', 'md5', 'sha', 'sha1', 'sha256', 'sha3_256']
-    # Path to hash salt file
+    HASH_FAMILIES = ['blake2b', 'blake2s', 'md4', 'md5', 'sha1', 'sha256', 'sha512', 'sha3_256', 'sha3_512']
 
-    def __init__(self, bit_mapping, hash_family, num_hashes=1, num_areas=4):
+    def __init__(self, hash_family, bit_mapping=10, num_hashes=1, num_areas=4):
         """
         Initialises the SBF class.
         :param bit_mapping: filter composed of 2^bit_mapping cells.
@@ -186,7 +185,7 @@ class sbf:
                 # Initializes the hash function according to the hash family
                 if self.i == 'md5':
                     self.m = hashlib.md5()
-                elif self.i in ['sha', 'sha1']:
+                elif self.i == 'sha1':
                     self.m = hashlib.sha1()
                 else:
                     self.m = hashlib.new(self.i)

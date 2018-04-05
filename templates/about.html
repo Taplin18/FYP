@@ -106,7 +106,7 @@
                             aimed at mitigating this threat to personal privacy.
                         </li>
                         <li class="collection-item">
-                            The spatial bloom filter is a data structure based on bloom filters, designed
+                            The SBF is a data structure based on bloom filters, designed
                             to store location information.
                         </li>
                         <li class="collection-item">
@@ -118,7 +118,6 @@
                             At the same time, the points and areas of interest remain oblivious
                             to the user.
                         </li>
-
                     </ul>
                 </div>
             </div>
@@ -132,29 +131,82 @@
                             has a set of coordinates associated with it.
                         </li>
                         <li class="collection-item">
-                            There is a geospatial grid placed on the map which allows the coordinates
+                            A geospatial grid is placed on the map which allows the coordinates
                             that are extracted to be accurate to 0.0001 of a degree.
                         </li>
                         <li class="collection-item">
-                            The coordinates for are taken from the bottom-left of each cell.
+                            An example of an Area of Interest is shown <a href="#aoi">below</a>.
                         </li>
                         <li class="collection-item">
-                            When the dataset is imported, it is the Area od Interest number that is
-                            placed in the SBF.
+                            When the dataset is imported, it is the Area of Interest number (1, 2, 3 or 4) that is
+                            placed in the spacial bloom filter.
                         </li>
                         <li class="collection-item">
                             Each coordinate is placed in the SBF three times as there is three
-                            hash functions.
+                            hash functions run.
                         </li>
                         <li class="collection-item">
-                            As there is many values placed into the SBF, the Area of Interest
+                            As there is 1,374 values placed into the SBF, the Area of Interest
                             number can be overwritten by the new values that are being inserted.
                         </li>
                         <li class="collection-item">
                             Check the
                             <a href="{{ url_for('values') }}">Test Data</a>
                             tab for coordinates that are now incorrect as their Area of Interest value has
-                            been overwritten.
+                            been overwritten after importing the cork.csv.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row" id="aoi">
+                <div class="col s12 m12 l12">
+                    <h5 class="header">Area of Interest</h5>
+                    <div class="card horizontal">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/AoI1.png') }}">
+                        </div>
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <ul class="collection">
+                                    <li class="collection-item">
+                                        Example of the geospacial grid with Area of Interest 1 highlighted.
+                                    </li>
+                                    <li class="collection-item">
+                                        The coordinates for are taken from the bottom-left of each cell within the area.
+                                    </li>
+                                    <li class="collection-item">
+                                        Example of a coordinate: 51.8954#-8.4772.
+                                    </li>
+                                    <li class="collection-item">
+                                        There is 458 coordinates in total between the four Areas of Interest.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <ul class="collection with-header">
+                        <li class="collection-header"><h5>Check Results</h5></li>
+                        <li class="collection-item">
+                            When querying the spacial bloom filter, the result is which Area of Interest it belongs to.
+                        </li>
+                        <li class="collection-item">
+                            There will be three Area of Interest results as the coordinate was placed in the SBF three
+                            times as there is three hash functions in the hash family.
+                        </li>
+                        <li class="collection-item">
+                            The lowest Area of Interest value is the answer as cells can be overwritten.
+                        </li>
+                        <li class="collection-item">
+                            If any of the three results are zero, then the value queried is not in the SBF.
+                        </li>
+                        <li class="collection-item">
+                            As cells can be overwritten, it is possible that the wrong Area of Interest is returned.
                         </li>
                     </ul>
                 </div>
