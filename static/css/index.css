@@ -8,7 +8,7 @@ nav .brand-logo {
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: 200px;
     background-color: #555;
     color: #fff;
     text-align: center;
@@ -18,7 +18,7 @@ nav .brand-logo {
     z-index: 1;
     bottom: 125%;
     left: 50%;
-    margin-left: -60px;
+    margin-left: -100px;
     opacity: 0;
     transition: opacity 0.3s;
 }
@@ -41,6 +41,22 @@ nav .brand-logo {
 
 .card .card-content p {
     font-size: 17px;
+}
+
+.tabs .tab a{
+    color:#64b5f6;
+}
+
+.tabs .tab a:hover {
+    color:#2196f3;
+}
+
+.tabs .tab a.active {
+    color:#2196f3;
+}
+
+.tabs .indicator {
+    background-color:#2196f3;
 }
 
 table#resultTable.centered th{

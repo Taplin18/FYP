@@ -20,6 +20,7 @@ def index():
 
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
+                           stats_message=Markup(session.get('stats_message')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -31,11 +32,13 @@ def import_sbf():
 
     session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
     session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
+    session['stats_message'] = 'style="display: none"'
     session['fp_values'] = format_layout.false_positive_area(app.my_sbf.find_false_positives())
     session['incorrect_values'] = format_layout.incorrect_areas(app.my_sbf.incorrect_values())
 
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
+                           stats_message=Markup(session.get('stats_message')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -50,7 +53,9 @@ def check_sbf():
                                                                                       app.my_sbf.incorrect_values())
         sbf_table = format_layout.highlight_table(app.my_sbf.get_filter(), app.my_sbf.check(value))
 
-        return render_template('index.html', sbf_table=Markup(sbf_table), sbf_stats=Markup(session.get('sbf_stats')),
+        return render_template('index.html', sbf_table=Markup(sbf_table),
+                               sbf_stats=Markup(session.get('sbf_stats')),
+                               stats_message=Markup(session.get('stats_message')),
                                check_result_table=Markup(check_result_table),
                                check_result_conclusion=Markup(check_result_conclusion))
 
@@ -62,6 +67,7 @@ def clear_sbf():
 
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
+                           stats_message=Markup(session.get('stats_message')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -95,6 +101,7 @@ def update_hash_family():
 def back():
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
+                           stats_message=Markup(session.get('stats_message')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -125,6 +132,7 @@ def edit_details():
 def _set_session():
     session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
     session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
+    session['stats_message'] = 'style="display: display"'
 
     check_result_table, check_result_conclusion = format_layout.no_check_result()
 
