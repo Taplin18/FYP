@@ -343,13 +343,37 @@ class sbf:
         Update the stats about the SBF filter.
         """
         self.precision = precision
-        self.stats["Filter Sparsity"] = str('{:.{prec}f}'.format(round(self._filter_sparsity(), self.precision),
-                                                                 prec=self.precision))
-        self.stats["Filter False Positive Probability"] = str('{:.{prec}f}'.format(round(self._filter_fpp(),
-                                                                                         self.precision),
-                                                                                   prec=self.precision))
+
+        self._expected_area_cells()
+        self._area_fpp()
+        self._area_apriori_fpp()
+        self._area_apriori_isep()
+        self._area_isep()
+
+        self.stats["Filter Sparsity"] = str('{:.{prec}f}'.format(
+            round(self._filter_sparsity(), self.precision), prec=self.precision))
+
+        self.stats["Filter False Positive Probability"] = str('{:.{prec}f}'.format(
+            round(self._filter_fpp(), self.precision), prec=self.precision))
+
+        self.stats["Filter a-priori False Positive Probability"] = str('{:.{prec}f}'.format(
+            round(self._filter_apriori_fpp(), self.precision), prec=self.precision))
+
         self.stats['Number of Mapped Elements'] = str(self.members)
         self.stats['Number of Hash Collisions'] = str(self.collisions)
+
+    def area_prop(self):
+        print('Area properties:')
+        print('----------------')
+        for self.j in range(1, self.num_areas + 1):
+            self.potential_elements = (self.area_members[self.j] * len(self.hash_family)) - self.area_self_collisions[self.j]
+            print(self.j, self.area_members[self.j], len(self.hash_family), self.area_self_collisions[self.j])
+            print('Area ' + str(self.j).rjust(len(str(self.num_areas))) + ': '
+                  + str(self.area_members[self.j]) + ' members, '
+                  + str(round(self.area_expected_cells[self.j])) + ' expected cells, '
+                  + str(self.area_cells[self.j]) + ' cells out of '
+                  + str(self.potential_elements) + ' potential ('
+                  + str(self.area_self_collisions[self.j]) + ' self-collisions)')
 
     def _filter_sparsity(self):
         """
@@ -367,7 +391,7 @@ class sbf:
     def _filter_fpp(self):
         """
         Computes the a-posteriori false positive probability over the entire filter.
-        :return: the filter a-posteriori fpp.
+        :return: the filter a-posteriori false positive probability.
         """
 
         self.c = 0
@@ -378,7 +402,19 @@ class sbf:
 
         self.p = self.c / self.num_cells
 
-        return pow(self.p, self.num_hashes)
+        return pow(self.p, len(self.hash_family))
+
+    def _filter_apriori_fpp(self):
+        """
+        Computes the a-priori false positive probability over the entire filter (i.e. not area-specific).
+        :return: The filter a-priori false positives probability.
+        """
+
+        self.p = 1 - (1 / self.num_cells)
+
+        self.p = 1 - pow(self.p, (len(self.hash_family) * self.members))
+
+        return pow(self.p, len(self.hash_family))
 
     def get_filter(self):
         """
@@ -412,6 +448,8 @@ class sbf:
         self.area_cells = [0] * (self.num_areas + 1)
         self.area_self_collisions = [0] * (self.num_areas + 1)
         self.insert_file_list = []
+        self.all_coors = []
+        self._coors()
         self.stats = {
             "Hash Family": str(self.hash_family),
             "Number of Cells": str(self.num_cells),
@@ -506,6 +544,202 @@ class sbf:
             for y in range(lat1, lat2 + 2):
                 self.all_coors.append("51.{}#-8.{}".format(x, y))
 
+    def _area_fpp(self):
+        """
+        Computes a-posteriori false positives probability for each area.
+        :return: list of a-posteriori false positives probability for the areas.
+        """
+
+        self.area_fpp = [0] * (self.num_areas + 1)
+
+        for self.i in range(self.num_areas, 0, -1):
+
+            self.c = 0
+
+            for self.j in range(self.i, self.num_areas + 1):
+                self.c += self.area_cells[self.j]
+
+            self.p = self.c / self.num_cells
+            self.area_fpp[self.i] = pow(self.p, len(self.hash_family))
+
+            for self.j in range(self.i, self.num_areas):
+                self.area_fpp[self.i] -= self.area_fpp[self.j + 1]
+
+            if self.area_fpp[self.i] < 0:
+                self.area_fpp[self.i] = 0
+
+        del self.j
+        del self.c
+        del self.p
+        del self.i
+
+        return self.area_fpp
+
+    def _area_apriori_fpp(self):
+        """
+        Computes a-priori false positives probability for each area.
+        :return: list of a-priori false positives probability for the areas.
+        """
+
+        self.area_apriori_fpp = [0] * (self.num_areas + 1)
+
+        for self.i in range(self.num_areas, 0, -1):
+
+            self.c = 0
+            self.p = 0
+
+            for self.j in range(self.i, self.num_areas + 1):
+                self.c += self.area_members[self.j]
+
+            self.p = 1 - (1 / self.num_cells)
+
+            self.p = 1 - pow(self.p, (len(self.hash_family) * self.c))
+
+            self.p = pow(self.p, len(self.hash_family))
+
+            self.area_apriori_fpp[self.i] = self.p
+
+            for self.j in range(self.i, self.num_areas):
+                self.area_apriori_fpp[self.i] -= self.area_apriori_fpp[self.j + 1]
+
+            if self.area_apriori_fpp[self.i] < 0:
+                self.area_apriori_fpp[self.i] = 0
+
+        del self.j
+        del self.c
+        del self.p
+        del self.i
+
+        return self.area_apriori_fpp
+
+    def _expected_area_cells(self):
+        """
+        Computes the expected number of cells for each area
+        :return: list of expected number of cells for the areas.
+        """
+
+        self.area_expected_cells = [0] * (self.num_areas + 1)
+
+        for self.i in range(self.num_areas, 0, -1):
+
+            self.nfill = 0
+
+            for self.j in range(self.i + 1, self.num_areas + 1):
+                self.nfill += self.area_members[self.j]
+
+            self.p1 = 1 - (1 / self.num_cells)
+
+            self.p2 = pow(self.p1, (len(self.hash_family) * self.nfill))
+
+            self.p1 = 1 - pow(self.p1, (len(self.hash_family) * self.area_members[self.i]))
+
+            self.p1 = self.num_cells * self.p1 * self.p2
+
+            self.area_expected_cells[self.i] = self.p1
+
+        del self.nfill
+        del self.p1
+        del self.p2
+        del self.i
+        del self.j
+
+        return self.area_expected_cells
+
+    def _area_apriori_isep(self):
+        """
+        Computes a-priori inter-set error probability for each area.
+        :return: list of a-priori inter-set error probability for the areas.
+        """
+
+        self.area_apriori_isep = [0] * (self.num_areas + 1)
+        self.area_apriori_safep = [0] * (self.num_areas + 1)
+        self.safeness = 1
+
+        for self.i in range(self.num_areas, 0, -1):
+
+            self.nfill = 0
+            self.p1 = 0
+            self.p2 = 0
+
+            for self.j in range(self.i + 1, self.num_areas + 1):
+                self.nfill += self.area_members[self.j]
+
+            self.p1 = 1 - (1 / self.num_cells)
+
+            self.p1 = 1 - pow(self.p1, (len(self.hash_family) * self.nfill))
+
+            self.p1 = pow(self.p1, len(self.hash_family))
+
+            self.p2 = 1 - self.p1
+            self.p2 = pow(self.p2, self.area_members[self.i])
+
+            self.safeness *= self.p2
+
+            self.area_apriori_isep[self.i] = self.p1
+            self.area_apriori_safep[self.i] = self.p2
+
+        del self.nfill
+        del self.p1
+        del self.p2
+        del self.i
+        del self.j
+
+        return self.area_apriori_isep
+
+    def _area_isep(self):
+        """
+        Computes a-posteriori inter-set error probability for each area.
+        :return: list of a-posteriori inter-set error probability for the areas.
+        """
+
+        self.area_isep = [0] * (self.num_areas + 1)
+
+        for self.i in range(self.num_areas, 0, -1):
+            self.p = 1 - self._area_emersion(self.i)
+            self.p = pow(self.p, len(self.hash_family))
+
+            self.area_isep[self.i] = self.p
+
+        del self.p
+
+        return self.area_isep
+
+    def _area_emersion(self, area):
+        """
+        Computes the emersion value for an area.
+        :param area: the area for which to calculate the emersion value.
+        :return: the emersion value.
+        """
+
+        self.area = area
+
+        if self.area_members[self.area] == 0:
+            return -1
+        else:
+            return (self.area_cells[self.area] / (
+                    (self.area_members[self.area] * len(self.hash_family)) - self.area_self_collisions[self.area]))
+
+    def _expected_area_emersion(self, area):
+        """
+        Computes the expected emersion value for an area.
+        :param area: the area for which to calculate the emersion value.
+        :return: the expected emersion value (float).
+        """
+
+        self.area = area
+        self.nfill = 0
+
+        for self.i in range(self.area + 1, self.num_areas + 1):
+            self.nfill += self.area_members[self.i]
+
+        self.p = 1 - (1 / self.num_cells)
+
+        self.p = pow(self.p, (len(self.hash_family) * self.nfill))
+
+        del self.nfill
+
+        return self.p
+
     @staticmethod
     def _get_salt_path():
         """
@@ -515,8 +749,8 @@ class sbf:
         aws = "/var/www/demo/hash_salt/hash_salt"
         if Path(aws).is_file():
             return aws
-        else:
-            return "hash_salt/hash_salt"
+
+        return "hash_salt/hash_salt"
 
     @staticmethod
     def _get_dataset_path():
@@ -527,5 +761,5 @@ class sbf:
         aws = "/var/www/demo/dataset/cork.csv"
         if Path(aws).is_file():
             return aws
-        else:
-            return "dataset/cork.csv"
+
+        return "dataset/cork.csv"
