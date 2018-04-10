@@ -228,6 +228,7 @@ class sbf:
 
         self.dataset_path = self._get_dataset_path()
         self.dataset_delimiter = ','
+        self._coors()
 
         with open(self.dataset_path, 'r') as self.dataset_file:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
