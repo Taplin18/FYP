@@ -47,8 +47,8 @@ class Layout:
     def area_stats(self, stats1, stats2):
         self.stats1 = stats1
         self.stats2 = stats2
-        k1 = list(self.stats1.keys())
-        k2 = list(self.stats2.keys())
+        k1 = sorted(list(self.stats1.keys()))
+        k2 = sorted(list(self.stats2.keys()))
         self.property, self.other_stats = "", ""
 
         for i in range(1, 5):

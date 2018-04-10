@@ -108,9 +108,9 @@
                                     <li class="tab"><a href="#stat2">Emersion, FPP and ISEP</a></li>
                                 </ul>
                             </div>
-                            <div class="card-content grey lighten-4">
+                            <div class="card-content">
                                 <div id="stat1">
-                                    <table class="centered responsive-table">
+                                    <table class="centered responsive-table striped">
                                         <thead>
                                             <tr>
                                                 <th>Area</th>
@@ -123,15 +123,13 @@
                                                         elements, etc.) and not an actual instance of the filter.
                                                     </span>
                                                 </th>
+                                                <th>Used Cells</th>
                                                 <th class="tooltip">
-                                                    Used Cells
+                                                    Potential Cells
                                                     <span class="tooltiptext">
-                                                        The expected value depends only on the filter properties
-                                                        (size, number of hash functions, number of sets and
-                                                        elements, etc.) and not an actual instance of the filter.
+                                                        (Members * number of Hash Functions) - Self Collisions
                                                     </span>
                                                 </th>
-                                                <th>Potential Cells</th>
                                                 <th>Self Collision</th>
                                             </tr>
                                         </thead>
@@ -141,50 +139,49 @@
                                     </table>
                                 </div>
                                 <div id="stat2">
-                                    <table class="centered responsive-table">
+                                    <table class="centered responsive-table striped">
                                         <thead>
                                             <tr>
                                                 <th>Area</th>
                                                 <th class="tooltip">
                                                     Expected Emersion
                                                     <span class="tooltiptext">
-                                                        TODO.
+                                                        It is the ratio between the cells actually set to the area
+                                                        label in the filter and the cells that would be theoretical
+                                                        set to the area label if no collision from higher areas happen.
                                                     </span>
                                                 </th>
                                                 <th class="tooltip">
                                                     Emersion
                                                     <span class="tooltiptext">
-                                                        TODO.
+                                                        The emersion indicates how much the values in the cells that
+                                                        maps elements of an area store the area label value (as opposed
+                                                        to a higher value).
                                                     </span>
                                                 </th>
                                                 <th class="tooltip">
                                                     a-priori FPP
                                                     <span class="tooltiptext">
-                                                        TODO.
+                                                        The a-priori false positives probability for each area.
                                                     </span>
                                                 </th>
                                                 <th class="tooltip">
                                                     FPP
                                                     <span class="tooltiptext">
-                                                        TODO.
+                                                        The a-posteriori false positives probability for each area.
                                                     </span>
                                                 </th>
                                                 <th class="tooltip">
                                                     a-priori ISEP
                                                     <span class="tooltiptext">
-                                                        TODO.
+                                                        The a-priori inter-set error probability for each area.
                                                     </span>
                                                 </th>
-                                                <th class="tooltip">
-                                                    Expected ISEP
-                                                    <span class="tooltiptext">
-                                                        TODO.
-                                                    </span>
-                                                </th>
+                                                <th>Expected ISEP</th>
                                                 <th class="tooltip">
                                                     ISEP
                                                     <span class="tooltiptext">
-                                                        TODO.
+                                                        The a-priori inter-set error probability for each area.
                                                     </span>
                                                 </th>
                                             </tr>

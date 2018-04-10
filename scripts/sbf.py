@@ -471,9 +471,9 @@ class sbf:
         self.filter = np.array(np.repeat(0, self.num_cells), dtype=np.uint8)
         self.members = 0
         self.collisions = 0
-        self.area_members.clear()
-        self.area_cells.clear()
-        self.area_self_collisions.clear()
+        self.area_members = [0] * (self.num_areas + 1)
+        self.area_cells = [0] * (self.num_areas + 1)
+        self.area_self_collisions = [0] * (self.num_areas + 1)
         self.insert_file_list.clear()
         self.incorrect_areas.clear()
         self.fp_coor.clear()
