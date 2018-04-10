@@ -92,6 +92,10 @@ class sbf:
         # all the coordinates in the csv
         self.all_coors = []
         self._coors()
+        # incorrect SBF values
+        self.incorrect_areas = {}
+        # fpp SBF values
+        self.fp_coor = {}
         # initial stats of filter
         self.stats = {
             "Hash Family": str(self.hash_family),
@@ -467,11 +471,13 @@ class sbf:
         self.filter = np.array(np.repeat(0, self.num_cells), dtype=np.uint8)
         self.members = 0
         self.collisions = 0
-        self.area_members = [0] * (self.num_areas + 1)
-        self.area_cells = [0] * (self.num_areas + 1)
-        self.area_self_collisions = [0] * (self.num_areas + 1)
-        self.insert_file_list = []
-        self.all_coors = []
+        self.area_members.clear()
+        self.area_cells.clear()
+        self.area_self_collisions.clear()
+        self.insert_file_list.clear()
+        self.incorrect_areas.clear()
+        self.fp_coor.clear()
+        self.all_coors.clear()
         self._coors()
         self.stats = {
             "Hash Family": str(self.hash_family),
@@ -487,7 +493,6 @@ class sbf:
         self.dataset_path = self._get_dataset_path()
         self.dataset_delimiter = ','
 
-        incorrect_areas = {}
         with open(self.dataset_path, 'r') as self.dataset_file:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
             for row in self.dataset_reader:
@@ -496,7 +501,7 @@ class sbf:
                 for hf in self.hash_family:
                     self.areas.append(self.check_val[hf][1])
                 if str(min(int(m) for m in self.areas)) != row[0]:
-                    incorrect_areas[row[1]] = [int(row[0]), self.areas]
+                    self.incorrect_areas[row[1]] = [int(row[0]), self.areas]
 
         del self.dataset_path
         del self.dataset_delimiter
@@ -505,7 +510,7 @@ class sbf:
         del self.check_val
         del self.areas
 
-        return incorrect_areas
+        return self.incorrect_areas
 
     def allowed_hashes(self):
         """
@@ -520,7 +525,6 @@ class sbf:
         Find the coordinates are not in the SBF but falsely return an Area of Interest.
         :return: a dictionary of 10 false positive coordinates.( key: coordinate, value:[area of interests])
         """
-        self.fp_coor = {}
         indexes = []
         while len(indexes) != 100:
             indexes.append(randint(0, len(self.all_coors)))
