@@ -362,18 +362,40 @@ class sbf:
         self.stats['Number of Mapped Elements'] = str(self.members)
         self.stats['Number of Hash Collisions'] = str(self.collisions)
 
-    def area_prop(self):
-        print('Area properties:')
-        print('----------------')
+    def area_stats(self):
+        self.area_properties, self.area_stats2 = {}, {}
+
         for self.j in range(1, self.num_areas + 1):
-            self.potential_elements = (self.area_members[self.j] * len(self.hash_family)) - self.area_self_collisions[self.j]
-            print(self.j, self.area_members[self.j], len(self.hash_family), self.area_self_collisions[self.j])
-            print('Area ' + str(self.j).rjust(len(str(self.num_areas))) + ': '
-                  + str(self.area_members[self.j]) + ' members, '
-                  + str(round(self.area_expected_cells[self.j])) + ' expected cells, '
-                  + str(self.area_cells[self.j]) + ' cells out of '
-                  + str(self.potential_elements) + ' potential ('
-                  + str(self.area_self_collisions[self.j]) + ' self-collisions)')
+            self.potential_elements = (self.area_members[self.j] *
+                                       len(self.hash_family)) - self.area_self_collisions[self.j]
+            stats1 = [str(self.area_members[self.j]), str(round(self.area_expected_cells[self.j])),
+                      str(self.area_cells[self.j]), str(self.potential_elements),
+                      str(self.area_self_collisions[self.j])]
+
+            self.area_properties[str(self.j).rjust(len(str(self.num_areas)))] = stats1
+
+        for self.j in range(1, self.num_areas + 1):
+            stats2 = [str('{:.{prec}f}'.format(round(self._expected_area_emersion(self.j), self.precision),
+                                               prec=self.precision)),
+                      str('{:.{prec}f}'.format(round(self._area_emersion(self.j), self.precision),
+                                               prec=self.precision)),
+                      str('{:.{prec}f}'.format(round(self.area_apriori_fpp[self.j], self.precision),
+                                               prec=self.precision)),
+                      str('{:.{prec}f}'.format(round(self.area_fpp[self.j], self.precision),
+                                               prec=self.precision)),
+                      str('{:.{prec}f}'.format(round(self.area_apriori_isep[self.j], self.precision),
+                                               prec=self.precision)),
+                      str('{:.{prec}f}'.format(round((self.area_apriori_isep[self.j] * self.area_members[self.j]),
+                                                     self.precision), prec=self.precision)),
+                      str('{:.{prec}f}'.format(round(self.area_isep[self.j], self.precision),
+                                               prec=self.precision))]
+
+            self.area_stats2[str(self.j).rjust(len(str(self.num_areas)))] = stats2
+
+        del self.j
+        del self.potential_elements
+
+        return self.area_properties, self.area_stats2
 
     def _filter_sparsity(self):
         """

@@ -44,6 +44,30 @@ class Layout:
         del self.sbf_stats
         return self.stats
 
+    def area_stats(self, stats1, stats2):
+        self.stats1 = stats1
+        self.stats2 = stats2
+        k1 = list(self.stats1.keys())
+        k2 = list(self.stats2.keys())
+        self.property, self.other_stats = "", ""
+
+        for i in range(1, 5):
+            self.property += "<tr><td>{}</td>".format(k1[i-1])
+            for j in self.stats1[k1[i-1]]:
+                self.property += "<td>{}</td>".format(j)
+            self.property += "</tr>"
+
+        for i in range(1, 5):
+            self.other_stats += "<tr><td>{}</td>".format(k2[i-1])
+            for j in self.stats2[k2[i-1]]:
+                self.other_stats += "<td>{}</td>".format(j)
+            self.other_stats += "</tr>"
+
+        del self.stats1
+        del self.stats2
+
+        return self.property, self.other_stats
+
     def load_table(self, sbf_table):
         """
         Returns the table contents.

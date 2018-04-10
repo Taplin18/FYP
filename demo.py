@@ -21,6 +21,7 @@ def index():
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
                            import_message=Markup(session.get('import_message')),
+                           area_link=Markup(session.get('area_link')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -33,12 +34,14 @@ def import_sbf():
     session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
     session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
     session['import_message'] = 'style="display: none"'
+    session['area_link'] = 'style="display: block"'
     session['fp_values'] = format_layout.false_positive_area(app.my_sbf.find_false_positives())
     session['incorrect_values'] = format_layout.incorrect_areas(app.my_sbf.incorrect_values())
 
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
                            import_message=Markup(session.get('import_message')),
+                           area_link=Markup(session.get('area_link')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -56,6 +59,7 @@ def check_sbf():
         return render_template('index.html', sbf_table=Markup(sbf_table),
                                sbf_stats=Markup(session.get('sbf_stats')),
                                import_message=Markup(session.get('import_message')),
+                               area_link=Markup(session.get('area_link')),
                                check_result_table=Markup(check_result_table),
                                check_result_conclusion=Markup(check_result_conclusion))
 
@@ -68,6 +72,7 @@ def clear_sbf():
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
                            import_message=Markup(session.get('import_message')),
+                           area_link=Markup(session.get('area_link')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -102,6 +107,7 @@ def back():
     return render_template('index.html', sbf_table=Markup(session.get('sbf_table')),
                            sbf_stats=Markup(session.get('sbf_stats')),
                            import_message=Markup(session.get('import_message')),
+                           area_link=Markup(session.get('area_link')),
                            check_result_table=Markup(session.get('check_result_table')),
                            check_result_conclusion=Markup(session.get('check_result_conclusion')))
 
@@ -124,6 +130,14 @@ def values():
                            fp_values=Markup(session.get('fp_values')))
 
 
+@app.route('/area_stats')
+def area_stats():
+    s1, s2 = app.my_sbf.area_stats()
+    stats1, stats2 = format_layout.area_stats(s1, s2)
+
+    return render_template('area.html', stats1=Markup(stats1), stats2=Markup(stats2))
+
+
 @app.route('/edit_details')
 def edit_details():
     hash_family, hf_options = _hash_functions(app.my_sbf.get_hash_family())
@@ -133,7 +147,8 @@ def edit_details():
 def _set_session():
     session['sbf_table'] = format_layout.load_table(app.my_sbf.get_filter())
     session['sbf_stats'] = format_layout.load_stats(app.my_sbf.get_stats())
-    session['import_message'] = 'style="display: display"'
+    session['import_message'] = 'style="display: block"'
+    session['area_link'] = 'style="display: none"'
 
     check_result_table, check_result_conclusion = format_layout.no_check_result()
 
