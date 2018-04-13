@@ -25,12 +25,11 @@ class sbf:
     # The available hash families
     HASH_FAMILIES = ['md4', 'md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_256', 'sha3_512']
 
-    def __init__(self, hash_family, bit_mapping=10, num_hashes=1, num_areas=4):
+    def __init__(self, hash_family, bit_mapping=10, num_areas=4):
         """
         Initialises the SBF class.
         :param bit_mapping: filter composed of 2^bit_mapping cells.
         :param hash_family: the hash family used
-        :param num_hashes: number of digests to be produced
         :param num_areas: number of areas over which to build the filter
         :raise AttributeError: the arguments are out of bounds
         :except IOError: error with file
@@ -38,15 +37,12 @@ class sbf:
 
         self.bit_mapping = bit_mapping
         self.hash_family = [x.lower() for x in hash_family]
-        self.num_hashes = num_hashes
         self.num_areas = num_areas
         self.hash_salt_path = self._get_salt_path()
 
         # Argument validation
         if (self.bit_mapping <= 0) or (self.bit_mapping > self.MAX_BIT_MAPPING):
             raise AttributeError("Invalid bit mapping.")
-        if (self.num_hashes <= 0) or (self.num_hashes > self.MAX_HASH_NUMBER):
-            raise AttributeError("Invalid number of hash runs.")
         for self.i in self.hash_family:
             if self.i not in self.HASH_FAMILIES:
                 raise AttributeError("Invalid hash family.")
@@ -152,32 +148,29 @@ class sbf:
         self.element = element
         self.area = area
 
-        # Computes the hash digest of the input 'num_hashes' times; each
-        # iteration combines the input string with a different hash salt
         for self.i in self.hash_family:
-            for self.j in range(0, self.num_hashes):
 
-                # XOR byte by byte (as char by char) of the element string with the salt
-                self.buffer = bytes(''.join([chr(ord(a) ^ b)
-                                             for (a, b) in zip(self.element, self.hash_salts[self.j])]), 'latin-1')
+            # XOR byte by byte (as char by char) of the element string with the salt
+            self.buffer = bytes(''.join([chr(ord(a) ^ b)
+                                         for (a, b) in zip(self.element, self.hash_salts[0])]), 'latin-1')
 
-                # Initializes the hash function according to the hash family
-                if self.i == 'sha3_256':
-                    self.m = hashlib.sha3_256()
-                elif self.i == 'sha3_512':
-                    self.m = hashlib.sha3_512()
-                else:
-                    self.m = hashlib.new(self.i)
+            # Initializes the hash function according to the hash family
+            if self.i == 'sha3_256':
+                self.m = hashlib.sha3_256()
+            elif self.i == 'sha3_512':
+                self.m = hashlib.sha3_512()
+            else:
+                self.m = hashlib.new(self.i)
 
-                self.m.update(self.buffer)
+            self.m.update(self.buffer)
 
-                # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
-                # Thus, the hash digest is truncated after the first byte.
-                self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
+            # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
+            # Thus, the hash digest is truncated after the first byte.
+            self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
 
-                self.index = int(self.digest % pow(2, self.bit_mapping))
+            self.index = int(self.digest % pow(2, self.bit_mapping))
 
-                self.set_cell(self.index, self.area)
+            self.set_cell(self.index, self.area)
 
         self.members += 1
         self.area_members[self.area] += 1
@@ -186,7 +179,6 @@ class sbf:
         del self.digest
         del self.m
         del self.i
-        del self.j
         del self.element
 
     def insert_from_file(self):
@@ -269,40 +261,36 @@ class sbf:
         self.current_area = 0
         self.value_indexes = {}
 
-        # Computes the hash digest of the input 'num_hashes' times; each
-        # iteration combines the input string with a different hash salt
         for self.i in self.hash_family:
-            for self.j in range(0, self.num_hashes):
 
-                # XOR byte by byte (as char by char) of the element string with the salt
-                self.buffer = bytes(''.join([chr(ord(a) ^ b)
-                                             for (a, b) in zip(self.element, self.hash_salts[self.j])]), 'latin-1')
+            # XOR byte by byte (as char by char) of the element string with the salt
+            self.buffer = bytes(''.join([chr(ord(a) ^ b)
+                                         for (a, b) in zip(self.element, self.hash_salts[0])]), 'latin-1')
 
-                # Initializes the hash function according to the hash family
-                if self.i == 'sha3_256':
-                    self.m = hashlib.sha3_256()
-                elif self.i == 'sha3_512':
-                    self.m = hashlib.sha3_512()
-                else:
-                    self.m = hashlib.new(self.i)
+            # Initializes the hash function according to the hash family
+            if self.i == 'sha3_256':
+                self.m = hashlib.sha3_256()
+            elif self.i == 'sha3_512':
+                self.m = hashlib.sha3_512()
+            else:
+                self.m = hashlib.new(self.i)
 
-                self.m.update(self.buffer)
+            self.m.update(self.buffer)
 
-                # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
-                # Thus, the hash digest is truncated after the first byte.
-                self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
+            # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
+            # Thus, the hash digest is truncated after the first byte.
+            self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
 
-                self.index = int(self.digest % pow(2, self.bit_mapping))
+            self.index = int(self.digest % pow(2, self.bit_mapping))
 
-                self.current_area = self.filter[self.index]
+            self.current_area = self.filter[self.index]
 
-                self.value_indexes[self.i] = [self.index, self.current_area]
+            self.value_indexes[self.i] = [self.index, self.current_area]
 
         del self.buffer
         del self.digest
         del self.m
         del self.i
-        del self.j
         del self.current_area
         del self.index
         del self.element
@@ -316,8 +304,6 @@ class sbf:
         self.precision = precision
 
         self._area_fpp()
-        self._area_apriori_fpp()
-        self._area_apriori_isep()
         self._area_isep()
 
         self.stats["Filter Sparsity"] = str('{:.{prec}f}'.format(
@@ -326,9 +312,6 @@ class sbf:
         self.stats["Filter False Positive Probability"] = str('{:.{prec}f}'.format(
             round(self._filter_fpp(), self.precision), prec=self.precision))
 
-        self.stats["Filter a-priori False Positive Probability"] = str('{:.{prec}f}'.format(
-            round(self._filter_apriori_fpp(), self.precision), prec=self.precision))
-
         self.stats['Number of Mapped Elements'] = str(self.members)
         self.stats['Number of Hash Collisions'] = str(self.collisions)
 
@@ -336,8 +319,7 @@ class sbf:
         self.area_properties, self.area_stats2 = {}, {}
 
         for self.j in range(1, self.num_areas + 1):
-            self.potential_elements = (self.area_members[self.j] *
-                                       len(self.hash_family)) - self.area_self_collisions[self.j]
+            self.potential_elements = self.area_members[self.j] * len(self.hash_family)
             stats1 = [str(self.area_members[self.j]), str(self.area_cells[self.j]),
                       str(self.potential_elements), str(self.area_self_collisions[self.j])]
 
@@ -346,14 +328,8 @@ class sbf:
         for self.j in range(1, self.num_areas + 1):
             stats2 = [str('{:.{prec}f}'.format(round(self._area_emersion(self.j), self.precision),
                                                prec=self.precision)),
-                      str('{:.{prec}f}'.format(round(self.area_apriori_fpp[self.j], self.precision),
-                                               prec=self.precision)),
                       str('{:.{prec}f}'.format(round(self.area_fpp[self.j], self.precision),
                                                prec=self.precision)),
-                      str('{:.{prec}f}'.format(round(self.area_apriori_isep[self.j], self.precision),
-                                               prec=self.precision)),
-                      str('{:.{prec}f}'.format(round((self.area_apriori_isep[self.j] * self.area_members[self.j]),
-                                                     self.precision), prec=self.precision)),
                       str('{:.{prec}f}'.format(round(self.area_isep[self.j], self.precision),
                                                prec=self.precision))]
 
@@ -379,8 +355,8 @@ class sbf:
 
     def _filter_fpp(self):
         """
-        Computes the a-posteriori false positive probability over the entire filter.
-        :return: the filter a-posteriori false positive probability.
+        Computes the false positive probability over the entire filter.
+        :return: the filter false positive probability.
         """
 
         self.c = 0
@@ -390,18 +366,6 @@ class sbf:
             self.c += self.area_cells[self.i]
 
         self.p = self.c / self.num_cells
-
-        return pow(self.p, len(self.hash_family))
-
-    def _filter_apriori_fpp(self):
-        """
-        Computes the a-priori false positive probability over the entire filter (i.e. not area-specific).
-        :return: The filter a-priori false positives probability.
-        """
-
-        self.p = 1 - (1 / self.num_cells)
-
-        self.p = 1 - pow(self.p, (len(self.hash_family) * self.members))
 
         return pow(self.p, len(self.hash_family))
 
@@ -535,8 +499,8 @@ class sbf:
 
     def _area_fpp(self):
         """
-        Computes a-posteriori false positives probability for each area.
-        :return: list of a-posteriori false positives probability for the areas.
+        Computes false positives probability for each area.
+        :return: list of false positives probability for the areas.
         """
 
         self.area_fpp = [0] * (self.num_areas + 1)
@@ -564,88 +528,10 @@ class sbf:
 
         return self.area_fpp
 
-    def _area_apriori_fpp(self):
-        """
-        Computes a-priori false positives probability for each area.
-        :return: list of a-priori false positives probability for the areas.
-        """
-
-        self.area_apriori_fpp = [0] * (self.num_areas + 1)
-
-        for self.i in range(self.num_areas, 0, -1):
-
-            self.c = 0
-            self.p = 0
-
-            for self.j in range(self.i, self.num_areas + 1):
-                self.c += self.area_members[self.j]
-
-            self.p = 1 - (1 / self.num_cells)
-
-            self.p = 1 - pow(self.p, (len(self.hash_family) * self.c))
-
-            self.p = pow(self.p, len(self.hash_family))
-
-            self.area_apriori_fpp[self.i] = self.p
-
-            for self.j in range(self.i, self.num_areas):
-                self.area_apriori_fpp[self.i] -= self.area_apriori_fpp[self.j + 1]
-
-            if self.area_apriori_fpp[self.i] < 0:
-                self.area_apriori_fpp[self.i] = 0
-
-        del self.j
-        del self.c
-        del self.p
-        del self.i
-
-        return self.area_apriori_fpp
-
-    def _area_apriori_isep(self):
-        """
-        Computes a-priori inter-set error probability for each area.
-        :return: list of a-priori inter-set error probability for the areas.
-        """
-
-        self.area_apriori_isep = [0] * (self.num_areas + 1)
-        self.area_apriori_safep = [0] * (self.num_areas + 1)
-        self.safeness = 1
-
-        for self.i in range(self.num_areas, 0, -1):
-
-            self.nfill = 0
-            self.p1 = 0
-            self.p2 = 0
-
-            for self.j in range(self.i + 1, self.num_areas + 1):
-                self.nfill += self.area_members[self.j]
-
-            self.p1 = 1 - (1 / self.num_cells)
-
-            self.p1 = 1 - pow(self.p1, (len(self.hash_family) * self.nfill))
-
-            self.p1 = pow(self.p1, len(self.hash_family))
-
-            self.p2 = 1 - self.p1
-            self.p2 = pow(self.p2, self.area_members[self.i])
-
-            self.safeness *= self.p2
-
-            self.area_apriori_isep[self.i] = self.p1
-            self.area_apriori_safep[self.i] = self.p2
-
-        del self.nfill
-        del self.p1
-        del self.p2
-        del self.i
-        del self.j
-
-        return self.area_apriori_isep
-
     def _area_isep(self):
         """
-        Computes a-posteriori inter-set error probability for each area.
-        :return: list of a-posteriori inter-set error probability for the areas.
+        Computes inter-set error probability for each area.
+        :return: list of inter-set error probability for the areas.
         """
 
         self.area_isep = [0] * (self.num_areas + 1)
