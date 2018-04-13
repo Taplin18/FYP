@@ -22,8 +22,6 @@ class sbf:
     MAX_BIT_MAPPING = 10
     # Utility byte value of the above MAX_BIT_MAPPING
     MAX_BYTE_MAPPING = MAX_BIT_MAPPING/8
-    # The maximum number of allowed areas.
-    MAX_AREA_NUMBER = 4
     # The maximum number of allowed digests
     MAX_HASH_NUMBER = 10
     # The available hash families
@@ -51,14 +49,11 @@ class sbf:
             raise AttributeError("Invalid bit mapping.")
         if (self.num_hashes <= 0) or (self.num_hashes > self.MAX_HASH_NUMBER):
             raise AttributeError("Invalid number of hash runs.")
-        if (self.num_areas <= 0) or (self.num_areas > self.MAX_AREA_NUMBER):
-            raise AttributeError("Invalid number of areas.")
         for self.i in self.hash_family:
             if self.i not in self.HASH_FAMILIES:
                 raise AttributeError("Invalid hash family.")
 
         # The number of bytes required for each cell
-        # As MAX_AREA_NUMBER is set to 4, 1 byte is enough
         self.cell_size = 1
 
         self.hash_salts = []
@@ -261,7 +256,7 @@ class sbf:
         self.index = index
         self.area = area
 
-        if (self.area <= 0) or (self.area > self.MAX_AREA_NUMBER):
+        if (self.area <= 0) or (self.area > self.num_areas):
             raise AttributeError("Invalid area number.")
 
         # Collisions handling
@@ -349,7 +344,6 @@ class sbf:
         """
         self.precision = precision
 
-        self._expected_area_cells()
         self._area_fpp()
         self._area_apriori_fpp()
         self._area_apriori_isep()
@@ -373,16 +367,13 @@ class sbf:
         for self.j in range(1, self.num_areas + 1):
             self.potential_elements = (self.area_members[self.j] *
                                        len(self.hash_family)) - self.area_self_collisions[self.j]
-            stats1 = [str(self.area_members[self.j]), str(round(self.area_expected_cells[self.j])),
-                      str(self.area_cells[self.j]), str(self.potential_elements),
-                      str(self.area_self_collisions[self.j])]
+            stats1 = [str(self.area_members[self.j]), str(self.area_cells[self.j]),
+                      str(self.potential_elements), str(self.area_self_collisions[self.j])]
 
             self.area_properties[str(self.j).rjust(len(str(self.num_areas)))] = stats1
 
         for self.j in range(1, self.num_areas + 1):
-            stats2 = [str('{:.{prec}f}'.format(round(self._expected_area_emersion(self.j), self.precision),
-                                               prec=self.precision)),
-                      str('{:.{prec}f}'.format(round(self._area_emersion(self.j), self.precision),
+            stats2 = [str('{:.{prec}f}'.format(round(self._area_emersion(self.j), self.precision),
                                                prec=self.precision)),
                       str('{:.{prec}f}'.format(round(self.area_apriori_fpp[self.j], self.precision),
                                                prec=self.precision)),
@@ -639,39 +630,6 @@ class sbf:
 
         return self.area_apriori_fpp
 
-    def _expected_area_cells(self):
-        """
-        Computes the expected number of cells for each area
-        :return: list of expected number of cells for the areas.
-        """
-
-        self.area_expected_cells = [0] * (self.num_areas + 1)
-
-        for self.i in range(self.num_areas, 0, -1):
-
-            self.nfill = 0
-
-            for self.j in range(self.i + 1, self.num_areas + 1):
-                self.nfill += self.area_members[self.j]
-
-            self.p1 = 1 - (1 / self.num_cells)
-
-            self.p2 = pow(self.p1, (len(self.hash_family) * self.nfill))
-
-            self.p1 = 1 - pow(self.p1, (len(self.hash_family) * self.area_members[self.i]))
-
-            self.p1 = self.num_cells * self.p1 * self.p2
-
-            self.area_expected_cells[self.i] = self.p1
-
-        del self.nfill
-        del self.p1
-        del self.p2
-        del self.i
-        del self.j
-
-        return self.area_expected_cells
-
     def _area_apriori_isep(self):
         """
         Computes a-priori inter-set error probability for each area.
@@ -745,27 +703,6 @@ class sbf:
         else:
             return (self.area_cells[self.area] / (
                     (self.area_members[self.area] * len(self.hash_family)) - self.area_self_collisions[self.area]))
-
-    def _expected_area_emersion(self, area):
-        """
-        Computes the expected emersion value for an area.
-        :param area: the area for which to calculate the emersion value.
-        :return: the expected emersion value (float).
-        """
-
-        self.area = area
-        self.nfill = 0
-
-        for self.i in range(self.area + 1, self.num_areas + 1):
-            self.nfill += self.area_members[self.i]
-
-        self.p = 1 - (1 / self.num_cells)
-
-        self.p = pow(self.p, (len(self.hash_family) * self.nfill))
-
-        del self.nfill
-
-        return self.p
 
     @staticmethod
     def _get_salt_path():
