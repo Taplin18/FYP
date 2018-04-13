@@ -14,8 +14,6 @@ if sys.version_info < (3, 6):
 
 class sbf:
 
-    # The maximum string length in bytes of each element given as input to be mapped in the SBF
-    MAX_INPUT_SIZE = 128
     # This value defines the maximum  number of cells of the SBF:
     # MAX_BIT_MAPPING = 32 states that the SBF will be composed at most by 2^32 cells.
     # The value is the number of bits used for SBF indexing.
@@ -62,8 +60,7 @@ class sbf:
             with open(self.hash_salt_path) as self.salt_file:
                 self.hash_salts = self._load_hash_salt(self.salt_file)
         except IOError:
-            with open(self.hash_salt_path, 'w') as self.salt_file:
-                self.hash_salts = self.create_hash_salt(self.salt_file)
+            raise IOError("Error opening hash salts")
 
         # The number of cells in the filter
         self.num_cells = pow(2, self.bit_mapping)
@@ -120,32 +117,6 @@ class sbf:
         Exits the SBF class (to be used with the 'with' statement).
         """
         pass
-
-    def create_hash_salt(self, salt_file):
-        """
-        Creates a hash salt for each  num_hashes.
-        Each input element will be combined with the salt via XOR, by the insert and check methods.
-        The length of salts is MAX_INPUT_SIZE bytes.
-        Hashes are stored encoded in base64.
-        :param salt_file: the file where to store the hash salts.
-        :return: list of hash salts.
-        """
-
-        self.salt_file = salt_file
-        self.hash_salts = []
-
-        for self.i in range(0, self.num_hashes):
-            self.hash_salts.append(np.random.bytes(self.MAX_INPUT_SIZE))
-
-        with open(self.salt_file, 'w') as self.hash_salt_file:
-            for self.i in self.hash_salts:
-                self.hash_salt_file.write(base64.b64encode(self.i).decode('UTF-8') + "\n")
-
-        self.hash_salt_file.close()
-        del self.hash_salt_file
-        del self.salt_file
-
-        return self.hash_salts
 
     def _load_hash_salt(self, salt_file):
         """
