@@ -15,29 +15,22 @@ if sys.version_info < (3, 6):
 class sbf:
 
     # This value defines the maximum  number of cells of the SBF:
-    # MAX_BIT_MAPPING = 32 states that the SBF will be composed at most by 2^32 cells.
-    # The value is the number of bits used for SBF indexing.
-    MAX_BIT_MAPPING = 10
-    # Utility byte value of the above MAX_BIT_MAPPING
-    MAX_BYTE_MAPPING = MAX_BIT_MAPPING/8
-    # The maximum number of allowed digests
-    MAX_HASH_NUMBER = 10
+    MAX_BIT_MAPPING = 64
     # The available hash families
     HASH_FAMILIES = ['md4', 'md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_256', 'sha3_512']
 
-    def __init__(self, hash_family, bit_mapping=10, num_areas=4):
+    def __init__(self, hash_family, bit_mapping=10):
         """
         Initialises the SBF class.
         :param bit_mapping: filter composed of 2^bit_mapping cells.
         :param hash_family: the hash family used
-        :param num_areas: number of areas over which to build the filter
         :raise AttributeError: the arguments are out of bounds
+        :raise IOError: error with the file
         :except IOError: error with file
         """
 
         self.bit_mapping = bit_mapping
         self.hash_family = [x.lower() for x in hash_family]
-        self.num_areas = num_areas
         self.hash_salt_path = self._get_salt_path()
 
         # Argument validation
@@ -51,7 +44,6 @@ class sbf:
         self.cell_size = 1
 
         self.hash_salts = []
-        # Tries to load the hash salts from file otherwise creates them
         try:
             with open(self.hash_salt_path) as self.salt_file:
                 self.hash_salts = self._load_hash_salt(self.salt_file)
@@ -64,11 +56,14 @@ class sbf:
         # Initializes the cells to 0
         self.filter = np.array(np.repeat(0, self.num_cells), dtype=np.uint8)
 
-        # Filter statistics initialization:
+        # number of areas
+        self.num_areas = 4
         # number of elements in the filter
         self.members = 0
         # number of collisions in the filter
         self.collisions = 0
+        # precision
+        self.precision = 4
         # number of members for each area
         self.area_members = [0] * (self.num_areas + 1)
         # number of cells for each area
@@ -170,7 +165,7 @@ class sbf:
 
             self.index = int(self.digest % pow(2, self.bit_mapping))
 
-            self.set_cell(self.index, self.area)
+            self._set_cell(self.index, self.area)
 
         self.members += 1
         self.area_members[self.area] += 1
@@ -207,7 +202,7 @@ class sbf:
         del self.dataset_reader
         del self.row
 
-    def set_cell(self, index, area):
+    def _set_cell(self, index, area):
         """
         Sets a cell in the filter to the specified area label.
         This method is called by insert with the cell index, and the area label.
@@ -238,10 +233,6 @@ class sbf:
             self.collisions += 1
             self.area_self_collisions[self.area] += 1
         else:
-            # This condition should never be reached as long as elements are
-            # processed in ascending order of area label. Self-collisions may
-            # contain several miscalculations if elements are not passed
-            # following the ascending order of area labels.
             self.collisions += 1
 
         del self.index
@@ -263,11 +254,9 @@ class sbf:
 
         for self.i in self.hash_family:
 
-            # XOR byte by byte (as char by char) of the element string with the salt
             self.buffer = bytes(''.join([chr(ord(a) ^ b)
                                          for (a, b) in zip(self.element, self.hash_salts[0])]), 'latin-1')
 
-            # Initializes the hash function according to the hash family
             if self.i == 'sha3_256':
                 self.m = hashlib.sha3_256()
             elif self.i == 'sha3_512':
@@ -276,15 +265,9 @@ class sbf:
                 self.m = hashlib.new(self.i)
 
             self.m.update(self.buffer)
-
-            # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
-            # Thus, the hash digest is truncated after the first byte.
             self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
-
             self.index = int(self.digest % pow(2, self.bit_mapping))
-
             self.current_area = self.filter[self.index]
-
             self.value_indexes[self.i] = [self.index, self.current_area]
 
         del self.buffer
@@ -297,12 +280,10 @@ class sbf:
 
         return self.value_indexes
 
-    def update_stats(self, precision=4):
+    def update_stats(self):
         """
         Update the stats about the SBF filter.
         """
-        self.precision = precision
-
         self._area_fpp()
         self._area_isep()
 
@@ -319,9 +300,9 @@ class sbf:
         self.area_properties, self.area_stats2 = {}, {}
 
         for self.j in range(1, self.num_areas + 1):
-            self.potential_elements = self.area_members[self.j] * len(self.hash_family)
             stats1 = [str(self.area_members[self.j]), str(self.area_cells[self.j]),
-                      str(self.potential_elements), str(self.area_self_collisions[self.j])]
+                      str(self.area_members[self.j] * len(self.hash_family)),
+                      str(self.area_self_collisions[self.j])]
 
             self.area_properties[str(self.j).rjust(len(str(self.num_areas)))] = stats1
 
@@ -365,8 +346,10 @@ class sbf:
         for self.i in range(1, self.num_areas + 1):
             self.c += self.area_cells[self.i]
 
+        # Divides by the total number of cells
         self.p = self.c / self.num_cells
 
+        # to the power of the number of hash functions
         return pow(self.p, len(self.hash_family))
 
     def get_filter(self):
@@ -443,7 +426,6 @@ class sbf:
         Return a list of allowed hash functions.
         :return: list of hash functions.
         """
-        # return self.HASH_FAMILIES.remove('sha')
         return self.HASH_FAMILIES
 
     def find_false_positives(self):
@@ -469,7 +451,6 @@ class sbf:
         Return the number of bits need for mapping the hash digest.
         :param byte: the hash digest.
         :param nbits: the number of bits needed for mapping
-        :raise ValueError: the bytes need for truncation is greater than the number of bytes provided.
         :return: the bits needed for mapping
         """
         self.byte = byte
@@ -477,8 +458,6 @@ class sbf:
 
         # Calculate where to truncate the hash digest
         self.bytes_needed = (self.nbits + 7) // 8
-        if self.bytes_needed > len(self.byte):
-            raise ValueError("Require {} bytes, received {}".format(self.bytes_needed, len(byte)))
 
         self.x = int.from_bytes(byte[:self.bytes_needed], byteorder=byteorder)
         # If there were a non-byte aligned number of bits requested,
