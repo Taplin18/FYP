@@ -317,8 +317,6 @@ class sbf:
             self.area_stats2[str(self.j).rjust(len(str(self.num_areas)))] = stats2
 
         del self.j
-        del self.potential_elements
-
         return self.area_properties, self.area_stats2
 
     def _filter_sparsity(self):
