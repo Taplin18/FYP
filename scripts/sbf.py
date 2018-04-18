@@ -131,7 +131,7 @@ class sbf:
 
         return self.hash_salts
 
-    def _insert(self, element, area):
+    def insert(self, element, area):
         """
         Inserts an element into the SBF filter.
         For each hash function, internal method set_cell is called, passing elements coupled with the area labels.
@@ -160,7 +160,7 @@ class sbf:
             self.m.update(self.buffer)
 
             # We allow a maximum SBF mapping of 10 bit (resulting in 2^10 cells).
-            # Thus, the hash digest is truncated after the first byte.
+            # Thus, the hash digest is truncated after the first 10 bites.
             self.digest = self._bits_of(self.m.digest(), self.bit_mapping)
 
             self.index = int(self.digest % pow(2, self.bit_mapping))
@@ -190,7 +190,7 @@ class sbf:
         with open(self.dataset_path, 'r') as self.dataset_file:
             self.dataset_reader = csv.reader(self.dataset_file, delimiter=self.dataset_delimiter)
             for self.row in self.dataset_reader:
-                self._insert(self.row[1], int(self.row[0]))
+                self.insert(self.row[1], int(self.row[0]))
                 self.all_coors.remove(self.row[1])
 
         self.insert_file_list.append(self.dataset_path)
@@ -457,7 +457,7 @@ class sbf:
         # Calculate where to truncate the hash digest
         self.bytes_needed = (self.nbits + 7) // 8
 
-        self.x = int.from_bytes(byte[:self.bytes_needed], byteorder=byteorder)
+        self.x = int.from_bytes(self.byte[:self.bytes_needed], byteorder=byteorder)
         # If there were a non-byte aligned number of bits requested,
         # shift off the excess from the right (which came from the last byte processed)
         if self.nbits % 8:
