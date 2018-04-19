@@ -19,7 +19,7 @@ class sbf:
     # The available hash families
     HASH_FAMILIES = ['md4', 'md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_256', 'sha3_512']
 
-    def __init__(self, hash_family, bit_mapping=10):
+    def __init__(self, hash_family, bit_mapping=10, hash_salt_path="default"):
         """
         Initialises the SBF class.
         :param bit_mapping: filter composed of 2^bit_mapping cells.
@@ -31,7 +31,11 @@ class sbf:
 
         self.bit_mapping = bit_mapping
         self.hash_family = [x.lower() for x in hash_family]
-        self.hash_salt_path = self._get_salt_path()
+
+        if hash_salt_path == "default":
+            self.hash_salt_path = self._get_salt_path()
+        else:
+            self.hash_salt_path = hash_salt_path
 
         # Argument validation
         if (self.bit_mapping <= 0) or (self.bit_mapping > self.MAX_BIT_MAPPING):
