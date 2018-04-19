@@ -3,6 +3,5 @@
 ubuntu-xenial-16.04-cloudimg-console.log
 Vagrantfile
 venv
-index.py
 tester.py
 __pycache__
