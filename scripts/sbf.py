@@ -72,7 +72,7 @@ class sbf:
         self.area_self_collisions = [0] * (self.num_areas + 1)
         # list of file from which elements have been inserted
         self.insert_file_list = []
-        # all the coordinates in the csv
+        # all coordinates from cork map with csv removed
         self.all_coors = []
         self._coors()
         # incorrect SBF values
